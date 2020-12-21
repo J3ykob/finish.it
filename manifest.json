@@ -1,0 +1,11 @@
+{
+	"name": "Finish.it",
+	"version": "1.0",
+	"description": "Be more productive!",
+	"permissions": ["storage", "tabs", "webNavigation", "storage", "http://*/", "https://*/"],
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+	},
+	"manifest_version": 2
+}
