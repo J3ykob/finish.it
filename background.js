@@ -27,10 +27,13 @@ chrome.webNavigation.onCommitted.addListener(
 					return Date.now() - e.deadline
 				})
 			)
+
+			let g = goodList.find((e) => {
+				return Date.now() - e.deadline == p
+			})
+
 			chrome.tabs.update(d.tabId, {
-				url: goodList.find((e) => {
-					return Date.now() - e.deadline == p
-				}).url,
+				url: g.url,
 			})
 		})
 	},
