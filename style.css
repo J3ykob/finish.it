@@ -1,0 +1,88 @@
+*
+      {
+          margin:0;
+          padding: 0;
+      }
+      html 
+      {
+          width: 250px;
+      }
+      :root{
+        --white-bg: #ededed;
+        --white-primary: #545454;
+        --white-secondary: #cccccc;
+
+        --dark-bg: #12100f;
+        --dark-primary: #cccccc;
+        --dark-secondary: #545454;
+
+        --active: #00c940;
+      }
+      h1 
+      {
+          margin-left: 1.7em;
+          color:var(--active);
+      }
+      input 
+      {
+          background:none;
+          border:none;
+      }
+      .dark input {border-bottom: 1px solid var(--dark-primary); color: var(--dark-primary);}
+      .white input {border-bottom: 1px solid var(--white-primary); color: var(--white-primary);}
+      .hidden 
+      {
+          display: none;
+      }
+      #wrapper 
+      {
+          padding:10px;
+          font-size: 1em;
+          overflow: hidden;
+      }
+      .menu-side
+      {
+          width: 10%;
+          height: 300px;
+          float: left;
+      }
+      .menu-side li 
+      {
+          padding: 5px;
+      
+      }
+      .active svg 
+      {
+          fill: var(--active) !important;
+      }
+      .menu-top
+      {
+          height: 2em;
+      }
+      .dark
+      {
+        background-color: var(--dark-bg);
+        color: var(--dark-primary);
+      }
+      .white
+      {
+        background-color: var(--white-bg);
+        color:var(--white-primary);
+      }
+      .menu-button 
+      {
+          width: 45%;
+          height: 1.5em;
+          float:left;
+          text-align: center;
+      }
+      .menu-button:hover {cursor:pointer;}
+      ul, li {list-style: none;}
+      #dark {overflow: hidden;}
+      .white svg { fill:var(--white-primary) }
+      .dark svg { fill: var(--dark-primary) }
+
+      .tab 
+      {
+          margin-left: 3.5em;
+      }
