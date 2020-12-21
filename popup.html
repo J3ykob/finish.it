@@ -20,6 +20,13 @@
         --dark-primary: #cccccc;
         --dark-secondary: #545454;
       }
+      input 
+      {
+          background:none;
+          border:none;
+      }
+      .dark input {border-bottom: 1px solid var(--dark-primary); color: var(--dark-primary);}
+      .white input {border-bottom: 1px solid var(--white-primary); color: var(--white-primary);}
       .hidden 
       {
           display: none;
@@ -66,6 +73,11 @@
       #dark {overflow: hidden;}
       .white svg { fill:var(--white-primary) }
       .dark svg { fill: var(--dark-primary) }
+
+      .tab 
+      {
+          margin-left: 3.5em;
+      }
     </style>
   </head>
   <body>
@@ -95,7 +107,6 @@
             </ul>
         </div>
         <div class="menu-top">
-            <div class="tab" id="lists-tab">
                 <ul>
                     <li>
                     <div id="white" class="menu-button">WHITE</div>
@@ -104,7 +115,20 @@
                         <div id="dark" class="menu-button">BLACK</div>
                     </li>
                 </ul>
-            </div>
+        </div>
+        <div class="tab" id="lists-tab">
+            <ul>
+                <li>
+                    facebook.com
+                </li>
+                <li>
+                    youtube.com
+                </li>
+            </ul>
+            <form>
+                <input type="text">
+                <button type="submit">+</button>
+            </form>
         </div>
     </div>
   </body>
