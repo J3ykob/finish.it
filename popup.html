@@ -1,94 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      *
-      {
-          margin:0;
-          padding: 0;
-      }
-      html 
-      {
-          width: 250px;
-      }
-      :root{
-        --white-bg: #ededed;
-        --white-primary: #545454;
-        --white-secondary: #cccccc;
-
-        --dark-bg: #12100f;
-        --dark-primary: #cccccc;
-        --dark-secondary: #545454;
-      }
-      input 
-      {
-          background:none;
-          border:none;
-      }
-      .dark input {border-bottom: 1px solid var(--dark-primary); color: var(--dark-primary);}
-      .white input {border-bottom: 1px solid var(--white-primary); color: var(--white-primary);}
-      .hidden 
-      {
-          display: none;
-      }
-      #wrapper 
-      {
-          padding:10px;
-          font-size: 1em;
-          overflow: hidden;
-      }
-      .menu-side
-      {
-          width: 10%;
-          height: 300px;
-          float: left;
-      }
-      .menu-side li 
-      {
-          margin-bottom: 5px;
-      }
-      .menu-top
-      {
-          height: 2em;
-      }
-      .dark
-      {
-        background-color: var(--dark-bg);
-        color: var(--dark-primary);
-      }
-      .white
-      {
-        background-color: var(--white-bg);
-        color:var(--white-primary);
-      }
-      .menu-button 
-      {
-          width: 45%;
-          height: 1.5em;
-          float:left;
-          text-align: center;
-      }
-      .menu-button:hover {cursor:pointer;}
-      ul, li {list-style: none;}
-      #dark {overflow: hidden;}
-      .white svg { fill:var(--white-primary) }
-      .dark svg { fill: var(--dark-primary) }
-
-      .tab 
-      {
-          margin-left: 3.5em;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <style></style>
   </head>
   <body>
     <div id='wrapper' class="white">
         <div class="menu-side">
             <ul>
-                <li id="todo" class='menu-side-button'>
+                <li id="todo" class='menu-side-button active'>
                     <svg id="todo" enable-background="new 0 0 515.556 515.556" height="25" viewBox="0 0 515.556 515.556" width="25" xmlns="http://www.w3.org/2000/svg"><path d="m0 274.226 176.549 176.886 339.007-338.672-48.67-47.997-290.337 290-128.553-128.552z"/></svg>                
                 </li>
                 <li id="lists"class='menu-side-button'>
-                    <svg version="1.1" id="lists" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    <svg width="25" height="25" version="1.1" id="lists" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
                         <g>
                             <g>
@@ -106,17 +30,13 @@
                 </li>
             </ul>
         </div>
-        <div class="menu-top">
-                <ul>
-                    <li>
-                    <div id="white" class="menu-button">WHITE</div>
-                    </li>
-                    <li>
-                        <div id="dark" class="menu-button">BLACK</div>
-                    </li>
-                </ul>
+        <h1>finish.it</h1>
+        <div class="tab" id="todo-tab">
+            <ul>
+
+            </ul>
         </div>
-        <div class="tab" id="lists-tab">
+        <div class="tab hidden" id="lists-tab">
             <ul>
                 <li>
                     facebook.com
