@@ -1,4 +1,4 @@
-let blacklist = ['facebook', 'youtube']
+let blacklist = ['https://www.facebook.com/', 'https://www.youtube.com/']
 let goodlist = ['https://portal.librus.pl/rodzina']
 
 let task = {
@@ -15,9 +15,11 @@ let task2 = {
 chrome.storage.sync.set({ goodlist: [task, task2] }, function () {
 	console.log('Value is set to ' + [task, task2])
 })
+chrome.storage.sync.set({ blacklist: blacklist })
 
 chrome.webNavigation.onCommitted.addListener(
 	function (d) {
+		var blacklist = []
 		chrome.storage.sync.get(['goodlist'], function (e) {
 			let goodList = e.goodlist
 
@@ -36,12 +38,14 @@ chrome.webNavigation.onCommitted.addListener(
 				url: g.url,
 			})
 		})
+		chrome.storage.sync.get(['blacklist'], function (e) {
+			blacklist = e.blacklist
+		})
 	},
 	{
 		url: blacklist.map((e) => {
-			console.log(e)
 			return {
-				urlContains: e,
+				urlEquals: e,
 			}
 		}),
 	}
