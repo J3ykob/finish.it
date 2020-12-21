@@ -1,40 +1,42 @@
-$(document).ready(
-    function()
-    {
-        chrome.storage.sync.get(['tasklist'], function(result) {
-            console.log('Value currently is ' + result.tasklist[0].title);
-            var html = result.tasklist.map(function(e)
-            {
-                return `
+$(document).ready(function () {
+	chrome.storage.sync.get(['tasklist'], function (result) {
+		console.log('Value currently is ' + result.tasklist[0].title)
+		var html = result.tasklist.map(function (e) {
+			return `
+                <li>${e.title}</li>
+                `
+		})
+		$('#todo-tab ul').html(html)
+	})
+})
+
+chrome.storage.onChanged.addListener(function (e) {
+	chrome.storage.sync.get(['tasklist'], function (result) {
+		console.log('Value currently is ' + result.tasklist[0].title)
+		var html = result.tasklist.map(function (e) {
+			return `
                     <li>${e.title}</li>
-                    `;
-            })
-            $('#todo-tab ul').append(html);
-          });
-    }
-)
+                    `
+		})
+		$('#todo-tab ul').html(html)
+	})
+})
 
-$(".menu-button").click(
-    function(event)
-    {
-        var self = event.target.id;
-        console.log(self);
-        $("#wrapper").removeClass();
-        $("#wrapper").addClass(self);
-    }
-)
+$('.menu-button').click(function (event) {
+	var self = event.target.id
+	console.log(self)
+	$('#wrapper').removeClass()
+	$('#wrapper').addClass(self)
+})
 
-$(".menu-side-button").click(
-    function(event)
-    {
-        var self = event.target.id + "-tab";
-        $(".menu-side-button").removeClass("active");
-        $(this).addClass("active");
-        console.log(self);
-        $(".tab").addClass("hidden");
-        $("#"+self).removeClass("hidden");
-    }
-)
+$('.menu-side-button').click(function (event) {
+	var self = event.target.id + '-tab'
+	$('.menu-side-button').removeClass('active')
+	$(this).addClass('active')
+	console.log(self)
+	$('.tab').addClass('hidden')
+	$('#' + self).removeClass('hidden')
+})
 $('.add-task-button').click(function (event) {
 	let title = $('.add-task-title').val()
 	let deadline = $('.add-task-deadline').val()
