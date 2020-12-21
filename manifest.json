@@ -4,10 +4,10 @@
 	"description": "Be more productive!",
 	"permissions": ["storage", "tabs", "webNavigation", "storage", "http://*/", "https://*/"],
 	"background": {
-		"scripts": ["background.js"],
+		"scripts": ["background.js", "assets/scripts/main.js"],
 		"persistent": false
 	},
-	"page_action": {
+	"browser_action": {
 		"default_popup": "popup.html",
 		"default_icon":{
 			"32": "assets/img/32icon.png"
