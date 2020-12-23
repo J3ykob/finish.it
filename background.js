@@ -13,15 +13,16 @@ let task2 = {
 }
 
 chrome.storage.sync.set({ tasklist: [task, task2] }, function () {
-    console.log('Value is set to ' + [task, task2])
+  console.log('Value is set to ' + [task, task2])
 })
 chrome.storage.sync.set({ blacklist: blacklist })
 
 chrome.webNavigation.onCommitted.addListener(
-    function (d) {
-        var blacklist = []
-        chrome.storage.sync.get(['tasklist'], function (e) {
-            let goodList = e.tasklist
+
+	function (d) {
+		var blacklist = []
+		chrome.storage.sync.get(['tasklist'], function (e) {
+			let goodList = e.tasklist
 
             let p = Math.min.apply(
                 null,
