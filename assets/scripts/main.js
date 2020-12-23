@@ -140,6 +140,8 @@ $("#lists-tab").on("click", "li", function(e){
     const isDeleted = (element) => element == url;
     var index = result.blacklist.findIndex(isDeleted);
     result.blacklist.splice(index, 1);
+    console.log(index);
+    console.log(url);
     chrome.storage.sync.set({blacklist:result.blacklist})
     })
 })
