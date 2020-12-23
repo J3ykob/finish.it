@@ -3,7 +3,7 @@ let goodlist = ['https://portal.librus.pl/rodzina']
 
 let task = {
     title: 'Zadanie 1',
-    deadline: Date.now(),
+    deadline: new Date().setMonth(2),
     url: 'https://portal.librus.pl/rodzina',
 }
 let task2 = {
