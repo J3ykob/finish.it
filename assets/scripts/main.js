@@ -58,7 +58,7 @@ $(document).ready(
           {
               return `
               <li id="${e}" class="blacklisted">
-                ${e.split('www.')[1].split('/')[0]}
+                ${e.split('//')[1].split('/')[0]}
               </li>
               `;
           });
@@ -125,6 +125,7 @@ $(".add-bl").click(function()
 {
     chrome.tabs.getSelected(null, function(tab){
         var url = tab.url;
+        console.log(url);
         chrome.storage.sync.get(['blacklist'], function(result)
         {
             result.blacklist.push(url);
@@ -157,7 +158,7 @@ chrome.storage.onChanged.addListener(function (e) {
         {
             return `
             <li class="blacklisted">
-              ${e.split('www.')[1].split('/')[0]}
+              ${e.split('//')[1].split('/')[0]}
             </li>
             `;
         });
