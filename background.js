@@ -3,9 +3,9 @@ let goodlist = ['https://portal.librus.pl/rodzina']
 let workhours = [480, 960]
 
 let task = {
-	title: 'Zadanie 1',
-	deadline: Date.now(),
-	url: 'https://portal.librus.pl/rodzina',
+    title: 'Zadanie 1',
+    deadline: new Date().setMonth(2),
+    url: 'https://portal.librus.pl/rodzina',
 }
 let task2 = {
 	title: 'Zadanie 2',

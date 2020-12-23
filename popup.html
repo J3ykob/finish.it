@@ -35,22 +35,71 @@
             <ul>
 
             </ul>
+            <div class='form-input'>
+                <input type="text" placeholder="Text Mom at 4pm">
+                <button type="submit">Add</button>
+            </div>
         </div>
         <div class="tab hidden" id="lists-tab">
             <ul>
-                <li>
-                    facebook.com
-                </li>
-                <li>
-                    youtube.com
-                </li>
+                
             </ul>
-            <div id="add-tasks">
-					    <input type="text" class="add-task-title" />
-					    <input type="time" class="add-task-deadline" />
-					    <input type="text" class="add-task-url" />
-					    <button class="add-task-button">+</button>
-				    </div>
+            <div>
+                <button class="add-bl" type="submit">Add current page</button>
+            </div>
+            <div id="working-time">
+                <h3>Working time</h3>
+                <select id="start-day">
+                    <option value="mon">
+                        Monday
+                    </option>
+                    <option value="tue">
+                        Tuesday
+                    </option>
+                    <option value="wed">
+                        Wednesday
+                    </option>
+                    <option value="thu">
+                        Thursday
+                    </option>
+                    <option value="fri">
+                        Friday
+                    </option>
+                    <option value="sat">
+                        Saturday
+                    </option>
+                    <option value="sun">
+                        Sunday
+                    </option>
+                </select>
+                <label>to</label>
+                <select id="end-day">
+                    <option value="mon">
+                        Monday
+                    </option>
+                    <option value="tue">
+                        Tuesday
+                    </option>
+                    <option value="wed">
+                        Wednesday
+                    </option>
+                    <option value="thu">
+                        Thursday
+                    </option>
+                    <option selected value="fri">
+                        Friday
+                    </option>
+                    <option value="sat">
+                        Saturday
+                    </option>
+                    <option value="sun">
+                        Sunday
+                    </option>
+                </select>
+                <input value="09:00" type="time">
+                <label>to</label>
+                <input value="17:00" type="time">
+            </div>
         </div>
     </div>
   </body>
