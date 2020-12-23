@@ -67,15 +67,13 @@ $(document).ready(
     }
 )
 
-$(".menu-button").click(
-    function(event)
-    {
-        var self = event.target.id;
-        console.log(self);
-        $("#wrapper").removeClass();
-        $("#wrapper").addClass(self);
-    }
-)
+
+$('.menu-button').click(function (event) {
+	var self = event.target.id
+	console.log(self)
+	$('#wrapper').removeClass()
+	$('#wrapper').addClass(self)
+})
 
 $(".menu-side-button").click(
     function(event)
@@ -147,11 +145,6 @@ $("#lists-tab").on("click", "li", function(e){
     })
 })
 
-
-
-
-
-
 chrome.storage.onChanged.addListener(function (e) {
 	chrome.storage.sync.get(['blacklist'], function(result) {
         var html = result.blacklist.map(function(e)
@@ -165,6 +158,7 @@ chrome.storage.onChanged.addListener(function (e) {
         $("#lists-tab ul").empty();
         $('#lists-tab ul').append(html);
     })
+
 })
 $('.add-task-button').click(function (event) {
 	let title = $('.add-task-title').val()
