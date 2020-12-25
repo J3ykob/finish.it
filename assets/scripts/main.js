@@ -88,7 +88,12 @@ $(document).ready(function () {
 	const recognition = new SpeechRecognition()
 
 	recognition.continuous = true
-	recognition.interimResults = true
+	recognition.interimResults = false
+	recognition.lang = 'en'
+	recognition.onerror = (e) => {
+		console.log(e)
+		if (e.error == 'not-allowed') location.href = 'chrome-extension://lakepiipmgnhgbmnpbhaaclnchoniknl/popup.html'
+	}
 
 	recognition.start()
 
@@ -97,8 +102,9 @@ $(document).ready(function () {
 	let s = false
 
 	recognition.onspeechstart = (e) => {
+		console.log(e)
 		if (!s) {
-			console.log('speechstart')
+			console.log('looking for "okay"', s)
 			setTimeout(() => {
 				recognition.stop()
 			}, 650)
@@ -108,13 +114,20 @@ $(document).ready(function () {
 	recognition.onstart = (e) => {
 		console.log('sr started')
 	}
+	recognition.onend = (e) => {
+		console.log(e)
+		recognition.start()
+	}
 
 	recognition.onresult = (e) => {
+		console.log(e)
 		const t = e.results[e.resultIndex][0].transcript
 		console.log(t)
-		if (t.match(/okay|set/gi)) {
+		if (t.match(/okay|set|okej|ok/gi)) {
+			console.log(t)
 			s = true
 		} else if (s) {
+			console.log(t)
 			addTask(t)
 			s = false
 		}
@@ -231,19 +244,16 @@ function addTask(input) {
 
 	console.log(
 		input.match(
-			/((?<=(\:|\.))[0-9]{1,2}|([0-9]{1,2}(?=(\:|\.)))|[0-9]{1,2}(?=(\ ?[paPA][Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|$(\ [0-9]{1,2}\ ))/g
+			/((?<=(\:|\.))[0-9]{1,2}|([0-9]{1,2}(?=(\:|\.)))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|$(\ [0-9]{1,2}\ ))/g
 		)
 	)
 
-	if (
-		input.match(
-			/((?<=(\:|\.))[0-9]{1,2}|([0-9]{1,2}(?=(\:|\.)))|[0-9]{1,2}(?=(\ ?[paPA][Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|$(\ [0-9]{1,2}\ ))/g
-		)
-	) {
-		let match = input.match(
-			/((?<=(\:|\.))[0-9]{1,2}|([0-9]{1,2}(?=(\:|\.)))|[0-9]{1,2}(?=(\ ?[paPA][Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|$(\ [0-9]{1,2}\ ))/g
-		)
-		let pm = input.match(/[0-9](?=[pPmM])/g)
+	const match = input.match(
+		/((?<=(\:|\.))[0-9]{1,2}|([0-9]{1,2}(?=(\:|\.)))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|$(\ [0-9]{1,2}\ ))/g
+	)
+
+	if (match) {
+		let pm = input.match(/[0-9](?=(\ ?[pP]\.?[mM]))/g)
 
 		date.setMinutes(match[1] ? match[1] : 0)
 		date.setHours(parseInt(match[0]) + (pm ? 12 : 0))
@@ -251,11 +261,11 @@ function addTask(input) {
 	}
 
 	if (input.match(rd)) {
-		let match = input.match(rd)
+		let matchrd = input.match(rd)
 
-		switch (match[0]) {
+		switch (matchrd[0]) {
 			case 'tomorrow':
-				console.log(match)
+				console.log(matchrd)
 				date.setDate(date.getDate() + 1)
 				break
 			case 'today':
