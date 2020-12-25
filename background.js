@@ -1,11 +1,11 @@
 let blacklist = ['https://www.facebook.com/', 'https://www.youtube.com/']
 let goodlist = ['https://portal.librus.pl/rodzina']
-let workhours = [480, 960]
+let workhours = [480, 960, 1, 5]
 
 let task = {
-    title: 'Zadanie 1',
-    deadline: new Date().setMonth(2),
-    url: 'https://portal.librus.pl/rodzina',
+	title: 'Zadanie 1',
+	deadline: new Date().setMonth(2),
+	url: 'https://portal.librus.pl/rodzina',
 }
 let task2 = {
 	title: 'Zadanie 2',
@@ -23,8 +23,9 @@ chrome.webNavigation.onCommitted.addListener(
 	function (d) {
 		chrome.storage.sync.get(['workhours'], function (e) {
 			let ct = new Date().getMinutes() + new Date().getHours() * 60
-			console.log(ct, e.workhours)
-			if (ct > e.workhours[0] && ct < e.workhours[1]) {
+			let cd = new Date().getDay()
+			console.log(ct, cd, e.workhours)
+			if (ct > e.workhours[0] && ct < e.workhours[1] && e.workhours[2] <= cd && e.workhours[3] >= cd) {
 				var blacklist = []
 				chrome.storage.sync.get(['tasklist'], function (e) {
 					let goodList = e.tasklist
