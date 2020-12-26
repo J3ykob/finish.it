@@ -92,7 +92,8 @@ $(document).ready(function () {
 	recognition.lang = 'en'
 	recognition.onerror = (e) => {
 		console.log(e)
-		if (e.error == 'not-allowed') location.href = 'chrome-extension://lakepiipmgnhgbmnpbhaaclnchoniknl/popup.html'
+		if (e.error == 'not-allowed')
+			window.location.href = 'chrome-extension://lakepiipmgnhgbmnpbhaaclnchoniknl/popup.html'
 	}
 
 	recognition.start()
