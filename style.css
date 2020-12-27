@@ -16,8 +16,8 @@ html
 --dark-primary: #bbbbbb;
 --dark-secondary: #545454;
 
---active: #28DE68;
---wrong: #DE2E28;
+--active: #41D962;
+--wrong: #E7414B;
 }
 h1 
 {
@@ -30,7 +30,6 @@ input
     background:none;
     border:none;
     font-size:1.5em;
-    margin-left:.4em;
     width: 75%;
 }
 
@@ -59,8 +58,7 @@ input
 {
     color:var(--white-primary);
 }
-.dark input {border-bottom: 1px solid var(--dark-primary); color: var(--dark-primary);}
-.white input {border-bottom: 1px solid var(--white-primary); color: var(--white-primary);}
+.white input {color: var(--white-primary);}
 .hidden 
 {
     display: none;
@@ -107,8 +105,9 @@ color:var(--white-primary);
     float:left;
     text-align: center;
 }
-.menu-button:hover {cursor:pointer;}
+.menu-side-button:hover {cursor:pointer;}
 ul, li {list-style: none;}
+.tab ul{margin-top:10px}
 #dark {overflow: hidden;}
 .white svg { fill:var(--white-primary) }
 .dark svg { fill: var(--dark-primary) }
@@ -121,6 +120,7 @@ ul, li {list-style: none;}
 .tab li 
 {
     padding:0.4em;
+    border-radius:5px;
 }
 
 .tab li{
@@ -128,6 +128,9 @@ ul, li {list-style: none;}
     margin: 6px 0;
     transition: .2s ease all;
     line-height: .8em;
+    color: var(--white-bg);
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    height: 1.6em;
 }
 
 .tab li:hover{
@@ -149,15 +152,25 @@ ul, li {list-style: none;}
 
 .late 
 {
-    color: var(--wrong);
+    background-color: var(--wrong);
 }
 
-.late:hover 
-{
-    background-color: var(--white-secondary);
+.tab li:hover 
+{    
+   box-shadow: 0 0 5px rgba(0,0,0,0.7);
 }
 
-.on-time:hover 
+.tab li div {
+    float: left;
+    width: 50%;
+}
+
+.tab li img{
+    height: 1.5em;
+    float:right;
+}
+
+.on-time 
 {
     background-color: var(--active);
 }
@@ -174,10 +187,11 @@ ul, li {list-style: none;}
 
 .form-input
 {
-    margin-right: 10%;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: var(--white-secondary);
+    margin: 0;
+    font-size: 1em;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top:1px solid var(--white-secondary);
 }
 
 .form-input button 
@@ -218,4 +232,32 @@ ul, li {list-style: none;}
 {
     text-align: right;
     color:var(--white-secondary)
+}
+
+#progress
+{
+    position: fixed;
+    bottom:25px;
+    text-align: center;
+    width: 350px;
+    height: 15px;
+}
+
+.progress-bg
+{
+    width: 280px;
+    height: 15px;
+    float:left;
+    margin-left: 3.4em;
+    border-radius: 3px;
+    border:1px solid var(--white-secondary);
+}
+
+.progress-in 
+{
+    background-color: var(--wrong);
+    width: 20px;
+    height:15px;
+    border-radius: 2px;
+    transition: .2s ease all;
 }
