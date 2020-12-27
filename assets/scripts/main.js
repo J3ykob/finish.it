@@ -1,13 +1,6 @@
-$(document).ready(function () {
-	navigator.webkitGetUserMedia(
-		{ audio: true },
-		(s) => {
-			console.log(s)
-		},
-		(e) => {
-			console.log(e)
-		}
-	)
+
+function displayTasks()
+{
 	chrome.storage.sync.get(['tasklist'], function (result) {
 		var html = result.tasklist.map(function (e) {
 			var unit
@@ -28,7 +21,7 @@ $(document).ready(function () {
 			if (left > 0) {
 				left += unit
 				return `
-                    <li class="task on-time">${e.title}
+					<li class="task on-time" id="${e.title}">${e.title}
                         <br><span>
                     ${left}
                     </span>
@@ -37,7 +30,7 @@ $(document).ready(function () {
 			} else {
 				left = 'Late by ' + -1 * left + unit
 				return `
-                    <li class="task late">${e.title}
+                    <li class="task late" id="${e.title}">${e.title}
                         <br><span>
                     ${left}
                     </span>
@@ -45,9 +38,22 @@ $(document).ready(function () {
                     `
 			}
 		})
+		$("#tood-tab ul").empty()
 		$('#todo-tab ul').append(html)
 	})
+}
 
+$(document).ready(function () {
+	navigator.webkitGetUserMedia(
+		{ audio: true },
+		(s) => {
+			console.log(s)
+		},
+		(e) => {
+			console.log(e)
+		}
+	)
+	displayTasks()
 	chrome.storage.sync.get(['workhours'], function (e) {
 		$('#start-day option:selected').attr('selected', false)
 		$('#start-day option')
@@ -84,9 +90,9 @@ $(document).ready(function () {
 		$('#lists-tab ul').append(html)
 	})
 
-	const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
-	const recognition = new SpeechRecognition()
-
+	//const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
+	//const recognition = new SpeechRecognition()
+/*
 	recognition.continuous = true
 	recognition.interimResults = false
 	recognition.lang = 'en'
@@ -131,7 +137,37 @@ $(document).ready(function () {
 			addTask(t)
 			s = false
 		}
-	}
+	}*/
+})
+//USUWANIE TASKOW
+$('#todo-tab').on("click", "li", function(e)
+{
+	var id=e.target.id;
+	chrome.storage.sync.get(['tasklist'], function (result){
+		for(var i=0; i<result.tasklist.length; i++) {
+			for(key in result.tasklist[i]) {
+			  if(result.tasklist[i][key]==id)
+			  {
+			  console.log(i);
+			  result.tasklist.splice(i, 1);
+			  chrome.storage.sync.set({tasklist: result.tasklist})
+			  }
+			}
+		  }
+	})
+})
+
+$('#lists-tab').on('click', 'li', function (e) {
+	e.preventDefault()
+	url = $(this).attr('id')
+	chrome.storage.sync.get(['blacklist'], function (result) {
+		const isDeleted = (element) => element == url
+		var index = result.blacklist.findIndex(isDeleted)
+		result.blacklist.splice(index, 1)
+		console.log(index)
+		console.log(url)
+		chrome.storage.sync.set({ blacklist: result.blacklist })
+	})
 })
 
 $('.menu-button').click(function (event) {
@@ -167,6 +203,9 @@ $('.tab').on('click', 'li', function (event) {
 		})
 })
 
+
+
+
 $('#working-time select').change(function (e) {
 	var name = $(this).attr('id')
 	var selected = $(this).val()
@@ -196,6 +235,10 @@ $('.add-wh').click(function (ev) {
 	let e = $('#end-day').val()
 	console.log(f, t, s, e)
 	chrome.storage.sync.set({ workhours: [f, t, s, e] })
+})
+$(".add-task-button").click(function()
+{
+	displayTasks();
 })
 
 $('#lists-tab').on('click', 'li', function (e) {
