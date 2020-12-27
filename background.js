@@ -4,12 +4,12 @@ let workhours = [480, 960, 1, 5]
 
 let task = {
 	title: 'Zadanie 1',
-	deadline: new Date().setMonth(2),
+	deadline: '' + new Date(),
 	url: 'https://portal.librus.pl/rodzina',
 }
 let task2 = {
 	title: 'Zadanie 2',
-	deadline: new Date().setHours(23),
+	deadline: '' + new Date(),
 	url: 'https://portal.librus.pl/rodzina',
 }
 

@@ -1,9 +1,8 @@
-
 function drawTasks() {
 	chrome.storage.sync.get(['tasklist'], function (result) {
 		var html = result.tasklist.map(function (e) {
 			var unit
-			var left = e.deadline - Date.now()
+			var left = new Date(e.deadline) - new Date()
 			if (Math.abs(left) > 3600000 * 24 * 14) {
 				left = Math.floor(left / (3600000 * 24 * 14))
 				unit = ' weeks'
@@ -90,7 +89,7 @@ $(document).ready(function () {
 
 	//const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
 	//const recognition = new SpeechRecognition()
-/*
+	/*
 	recognition.continuous = true
 	recognition.interimResults = false
 	// recognition.lang = 'en'
@@ -139,20 +138,18 @@ $(document).ready(function () {
 	}*/
 })
 //USUWANIE TASKOW
-$('#todo-tab').on("click", "li", function(e)
-{
-	var id=e.target.id;
-	chrome.storage.sync.get(['tasklist'], function (result){
-		for(var i=0; i<result.tasklist.length; i++) {
-			for(key in result.tasklist[i]) {
-			  if(result.tasklist[i][key]==id)
-			  {
-			  console.log(i);
-			  result.tasklist.splice(i, 1);
-			  chrome.storage.sync.set({tasklist: result.tasklist})
-			  }
+$('#todo-tab').on('click', 'li', function (e) {
+	var id = e.target.id
+	chrome.storage.sync.get(['tasklist'], function (result) {
+		for (var i = 0; i < result.tasklist.length; i++) {
+			for (key in result.tasklist[i]) {
+				if (result.tasklist[i][key] == id) {
+					console.log(i)
+					result.tasklist.splice(i, 1)
+					chrome.storage.sync.set({ tasklist: result.tasklist })
+				}
 			}
-		  }
+		}
 	})
 })
 
@@ -226,10 +223,6 @@ $('.working-time').change(function (ev) {
 		chrome.storage.sync.set({ workhours: wh })
 	})
 })
-$(".add-task-button").click(function()
-{
-	displayTasks();
-})
 
 $('#lists-tab').on('click', 'li', function (e) {
 	e.preventDefault()
@@ -268,23 +261,27 @@ function addTask(input) {
 	})
 
 	let date = new Date()
+	console.log(date)
 
 	let rd = new RegExp('tomorrow|today', 'g')
 
 	console.log(
 		input.match(
-			/((?<=(\:|\.))[0-9]{1,2}|([0-9]{1,2}(?=(\:|\.)))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|$(\ [0-9]{1,2}\ ))/g
+			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
 		)
 	)
 
 	const match = input.match(
-		/((?<=(\:|\.))[0-9]{1,2}|([0-9]{1,2}(?=(\:|\.)))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|$(\ [0-9]{1,2}\ ))/g
+		/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
 	)
 
-	if (match) {
-		let pm = input.match(/[0-9](?=(\ ?[pP]\.?[mM]))/g)
+	let pm = input.match(/[0-9](?=(\ ?[pP]\.?[mM]))/g)
 
+	if (match) {
 		date.setMinutes(match[1] ? match[1] : 0)
+		if (match[0] + (pm ? 12 : 0) < new Date().getHours()) {
+			date.setDate(date.getDate() + 1)
+		}
 		date.setHours(parseInt(match[0]) + (pm ? 12 : 0))
 		console.log(match[0], match[1], match, date)
 	}
@@ -302,18 +299,29 @@ function addTask(input) {
 			default:
 				break
 		}
-	} else {
+	} else if (!match) {
 		date.setDate(date.getDate() + 1)
+		chrome.storage.sync.get(['workhours'], function (e) {
+			date.setHours(Math.floor(e.workhours[1] / 60))
+			date.setMinutes(0)
+		})
 	}
 
-	let matchedTitle = input.replace(match ? match : '', '').replace(matchrd ? matchrd[0] : '', '')
+	let matchedTitle = input
+		.replace(/(?<=([0-9]\ ?))([paPA]\.?[mM]\.?)/g, '')
+		// .replace(match ? (match[1] ? match[0] + ':' + match[1] : match[0]) : '', '')
+		.replace(
+			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$|(?<=[0-9]{1,2})([\:\.](?=[0-9]{2})))/g,
+			''
+		)
+		.replace(matchrd ? matchrd[0] : '', '')
 
 	chrome.storage.sync.get(['tasklist'], function (e) {
 		let tasks = e.tasklist
 		console.log(date)
 		tasks.push({
 			title: matchedTitle ? matchedTitle : 'Zadanie ' + (tasks.length + 1),
-			deadline: Date.parse(date),
+			deadline: '' + date,
 			url: matchedUrl ? matchedUrl : 'https://medium.com/',
 		})
 		chrome.storage.sync.set({ tasklist: tasks }, () => {
@@ -327,6 +335,16 @@ function addTask(input) {
 
 $('.add-task-button').click(function (event) {
 	let input = $('.add-task-input').val()
+	$('.add-task-input').val('')
 
 	addTask(input)
+})
+
+$('#add-tasks').keypress(function (e) {
+	if (e.keyCode == 13) {
+		let input = $('.add-task-input').val()
+		$('.add-task-input').val('')
+
+		addTask(input)
+	}
 })
