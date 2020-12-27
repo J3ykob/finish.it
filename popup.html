@@ -76,7 +76,7 @@
 				</div>
 				<div id="working-time">
 					<h3>Working time</h3>
-					<select id="start-day">
+					<select id="start-day" class="working-time">
 						<option value="1">Monday</option>
 						<option value="2">Tuesday</option>
 						<option value="3">Wednesday</option>
@@ -86,7 +86,7 @@
 						<option value="0">Sunday</option>
 					</select>
 					<label>to</label>
-					<select id="end-day">
+					<select id="end-day" class="working-time">
 						<option value="1">Monday</option>
 						<option value="2">Tuesday</option>
 						<option value="3">Wednesday</option>
@@ -95,12 +95,9 @@
 						<option value="6">Saturday</option>
 						<option value="0">Sunday</option>
 					</select>
-					<input class="wh-from" value="09:00" type="time" />
+					<input id="wh-from" class="working-time" value="09:00" type="time" />
 					<label>to</label>
-					<input class="wh-to" value="17:00" type="time" />
-					<div>
-						<button class="add-wh" type="submit">Set working hours</button>
-					</div>
+					<input id="wh-to" class="working-time" value="17:00" type="time" />
 				</div>
 			</div>
 		</div>
