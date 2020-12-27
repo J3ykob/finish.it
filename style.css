@@ -10,19 +10,20 @@ html
 :root{
 --white-bg: #ededed;
 --white-primary: #545454;
---white-secondary: #cccccc;
+--white-secondary: #bbbbbb;
 
 --dark-bg: #12100f;
---dark-primary: #cccccc;
+--dark-primary: #bbbbbb;
 --dark-secondary: #545454;
 
 --active: #28DE68;
---wrong: #AD130E;
+--wrong: #DE2E28;
 }
 h1 
 {
-    margin-left: 2.1em;
+    margin-left: .7em;
     color:var(--active);
+    line-height: .7em;
 }
 input 
 {
@@ -204,4 +205,17 @@ ul, li {list-style: none;}
 #working-time input 
 {
     width:auto;
+}
+
+.half
+{
+    width: 40%;
+    margin: 0;
+    float: left;
+}
+
+#task-stats
+{
+    text-align: right;
+    color:var(--white-secondary)
 }

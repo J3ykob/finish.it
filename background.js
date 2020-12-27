@@ -13,11 +13,17 @@ let task2 = {
 	url: 'https://portal.librus.pl/rodzina',
 }
 
+let stats = {
+	total: 2,
+	done: 0
+}
+
 chrome.storage.sync.set({ tasklist: [task, task2] }, function () {
 	console.log('Value is set to ' + [task, task2])
 })
 chrome.storage.sync.set({ blacklist: blacklist })
 chrome.storage.sync.set({ workhours: workhours })
+chrome.storage.sync.set({stats:stats})
 
 chrome.webNavigation.onCommitted.addListener(
 	function (d) {

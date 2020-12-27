@@ -38,10 +38,54 @@ function drawTasks() {
 			}
 		})
 		$('#todo-tab ul').empty().append(html)
+		chrome.storage.sync.get(['stats'], function(res){
+			var curTasks = result.tasklist.length;
+			console.log(res);
+			html2="<span>Current tasks: " + curTasks + "</span><br><span>Done tasks: "+res.stats.done+"</span>"
+			$("#task-stats").empty().append(html2);
+		})
 	})
 }
 
+function drawDate()
+{
+	var today = new Date();
+	var weekday = new Array(7);
+	var month = new Array(12);
+	weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	var dateTitle = weekday[today.getDay()];
+	day=today.getDate();
+	var dayNum;
+	if(day>10) dayNum=day/10;
+	else dayNum = day;
+
+	switch(dayNum)
+	{
+		case 1:
+			day+="st";
+			break;
+		case 2:
+			day+="nd";
+			break;
+		case 3:
+			day+="rd";
+			break;
+		default:
+			day+="th";
+	}
+	dateTitle += `
+	<br><span style="font-weight:300; font-size:.5em; line-height: 0;">${day}
+	`;
+	dateTitle+=month[today.getMonth()]+"</span>";
+
+	console.log(day);
+	$("h1").append(dateTitle);
+}
+
 $(document).ready(function () {
+	drawDate();
+
 	navigator.webkitGetUserMedia(
 		{ audio: true },
 		(s) => {
@@ -153,8 +197,32 @@ $('#todo-tab').on("click", "li", function(e)
 			  }
 			}
 		  }
+		  
 	})
+	refreshStats();
 })
+
+function refreshStats()
+{
+	console.log("test");
+	chrome.storage.sync.get(['tasklist'], function(result){
+		chrome.storage.sync.get(['stats'], function(result2){
+			console.log(result2.stats);
+			let stats=result2.stats;
+			stats.done++;
+			chrome.storage.sync.set({stats:stats}, function(){					
+				chrome.storage.sync.get(['stats'], function(res){
+					var curTasks = result.tasklist.length-1;
+					console.log(stats, curTasks)
+					html2="<span>Current tasks: " + curTasks + "</span><br><span>Done tasks: "+res.stats.done+"</span>"
+						$("#task-stats").empty().append(html2);
+					})
+			})
+			
+		})
+	})
+	
+}
 
 $('#lists-tab').on('click', 'li', function (e) {
 	e.preventDefault()
@@ -225,10 +293,6 @@ $('.working-time').change(function (ev) {
 		console.log(wh)
 		chrome.storage.sync.set({ workhours: wh })
 	})
-})
-$(".add-task-button").click(function()
-{
-	displayTasks();
 })
 
 $('#lists-tab').on('click', 'li', function (e) {
@@ -321,6 +385,13 @@ function addTask(input) {
 			chrome.storage.sync.get(['tasklist'], function (e) {
 				console.log(e.tasklist)
 			})
+		})
+	})
+	chrome.storage.sync.get(['stats'], function(result){
+		let stats=result.stats;
+		stats.total++;
+		chrome.storage.sync.set({stats:stats}, function(e){		console.log(stats)
+			console.log(e)
 		})
 	})
 }
