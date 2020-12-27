@@ -16,31 +16,85 @@ function drawTasks() {
 				left = Math.floor(left / 60000)
 				unit = ' minutes'
 			}
+			if(e.status=="todo")
+			{
 			if (left > 0) {
 				left += unit
 				return `
-					<li class="task on-time" id="${e.title}">${e.title}
+					<li class="task on-time" id="${e.title}"><div id="${e.title}">${e.title}
                         <br><span>
                     ${left}
-                    </span>
+					</span></div><div id="${e.title}" class="favicon">
+					<img id="${e.title}" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}"></div>
                     </li>
                     `
 			} else {
 				left = 'Late by ' + -1 * left + unit
 				return `
-                    <li class="task late" id="${e.title}">${e.title}
+                    <li class="task late" id="${e.title}"><div id="${e.title}">${e.title}
                         <br><span>
-                    ${left}
-                    </span>
-                    </li>
+						${left}
+						</span></div><div id="${e.title}" class="favicon">
+						<img src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}"></div>
+						</li>
                     `
 			}
+		}
 		})
 		$('#todo-tab ul').empty().append(html)
+		chrome.storage.sync.get(['stats'], function(res){
+			var curTasksArray = result.tasklist.map(function (e) {
+				var temp = 0;
+				if(e.status=="todo") temp++;
+				return temp;
+			})
+			curTasks = curTasksArray.reduce((a,b) => a+b, 0)
+			console.log(curTasks);
+			html2="<span>Current tasks: " + curTasks + "</span><br><span>Done tasks: "+res.stats.done+"</span>"
+			$("#task-stats").empty().append(html2);
+		})
 	})
 }
 
+function drawDate()
+{
+	var today = new Date();
+	var weekday = new Array(7);
+	var month = new Array(12);
+	weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	var dateTitle = weekday[today.getDay()];
+	day=today.getDate();
+	var dayNum;
+	if(day>10) dayNum=day/10;
+	else dayNum = day;
+
+	switch(dayNum)
+	{
+		case 1:
+			day+="st";
+			break;
+		case 2:
+			day+="nd";
+			break;
+		case 3:
+			day+="rd";
+			break;
+		default:
+			day+="th";
+	}
+	dateTitle += `
+	<br><span style="font-weight:300; font-size:.5em; line-height: 0;">${day}
+	`;
+	dateTitle+=month[today.getMonth()]+"</span>";
+
+	console.log(day);
+	$("h1").append(dateTitle);
+}
+
 $(document).ready(function () {
+	drawDate();
+
 	navigator.webkitGetUserMedia(
 		{ audio: true },
 		(s) => {
@@ -137,21 +191,205 @@ $(document).ready(function () {
 		}
 	}*/
 })
-//USUWANIE TASKOW
-$('#todo-tab').on('click', 'li', function (e) {
-	var id = e.target.id
+
+drawProgressBar();
+function drawProgressBar()
+{
+	start = [231,65,75]
+	middle = [227,217,40]
+	end = [65,217,98]
+	progress=1;
 	chrome.storage.sync.get(['tasklist'], function (result) {
-		for (var i = 0; i < result.tasklist.length; i++) {
-			for (key in result.tasklist[i]) {
-				if (result.tasklist[i][key] == id) {
-					console.log(i)
-					result.tasklist.splice(i, 1)
-					chrome.storage.sync.set({ tasklist: result.tasklist })
-				}
+		var todayTotalArray = result.tasklist.map(function (e) {
+			var temp=0;
+			var today = new Date();
+			console.log(e.deadline);
+			var deadline = new Date(e.deadline); 
+			if(deadline.getDate()==today.getDate() && deadline.getMonth()==today.getMonth() && deadline.getFullYear()==today.getFullYear())
+			{
+				temp++
 			}
+			return temp;
+		})
+		var todayDoneArray = result.tasklist.map(function (e) {
+			var temp=0;
+			var today = new Date();
+			console.log(e.deadline);
+			var deadline = new Date(e.deadline); 
+			if(deadline.getDate()==today.getDate() && deadline.getMonth()==today.getMonth() && deadline.getFullYear()==today.getFullYear() && e.status=="done")
+			{
+				temp++
+			}
+			return temp;
+		})
+		let todayTotal = todayTotalArray.reduce((a,b) => a+b, 0);
+		let todayDone = todayDoneArray.reduce((a,b) => a+b, 0);
+		
+		if(todayTotal>0) 
+		{
+			progress = todayDone/todayTotal;
 		}
+		console.log(progress)
+		if (progress>.5){
+			w = (progress-.5)*2;
+			color = [
+				Math.round((middle[0]+(end[0]-middle[0])*w)),
+				Math.round((middle[1]+(end[1]-middle[1])*w)),
+				Math.round((middle[2]+(end[2]-middle[2])*w)),
+			]
+		}
+		else{
+			w = progress*2
+			color = [
+				Math.round((start[0]+(middle[0]-start[0])*w)),
+				Math.round((start[1]+(middle[1]-start[1])*w)),
+				Math.round((start[2]+(middle[2]-start[2])*w)),
+			]
+		}
+		console.log (color);
+		let width = progress*280;
+		if(progress>0)
+		{
+			barHTML = `<span>Today tasks:</span><div class="progress-bg">
+					<div class="progress-in">
+					</div>
+				</div>`;
+		}
+		else {
+			barHTML = `<span>Today tasks:</span><div class="progress-bg">
+					<div class="progress-in">
+					</div>
+				</div>`;
+		}
+		$("#progress").empty().append(barHTML);
+		$(".progress-in").css("background-color", "rgb("+color[0]+","+color[1]+","+color[2]+")")
+		$(".progress-in").css("width", width + "px")
 	})
+	
+}
+
+function updateProgressBar()
+{
+	console.log("updateeee");
+	start = [231,65,75]
+	middle = [227,217,40]
+	end = [65,217,98]
+	progress=1;
+	chrome.storage.sync.get(['tasklist'], function (result) {
+		var todayTotalArray = result.tasklist.map(function (e) {
+			var temp=0;
+			var today = new Date();
+			console.log(e.deadline);
+			var deadline = new Date(e.deadline); 
+			if(deadline.getDate()==today.getDate() && deadline.getMonth()==today.getMonth() && deadline.getFullYear()==today.getFullYear())
+			{
+				temp++
+			}
+			return temp;
+		})
+		var todayDoneArray = result.tasklist.map(function (e) {
+			var temp=0;
+			var today = new Date();
+			console.log(e.deadline);
+			var deadline = new Date(e.deadline); 
+			if(deadline.getDate()==today.getDate() && deadline.getMonth()==today.getMonth() && deadline.getFullYear()==today.getFullYear() && e.status=="done")
+			{
+				temp++
+			}
+			return temp;
+		})
+		let todayTotal = todayTotalArray.reduce((a,b) => a+b, 0);
+		let todayDone = todayDoneArray.reduce((a,b) => a+b, 0);
+		
+		if(todayTotal>0) 
+		{
+			progress = (todayDone+1)/todayTotal;
+		}
+		console.log(progress)
+		if (progress>.5){
+			w = (progress-.5)*2;
+			color = [
+				Math.round((middle[0]+(end[0]-middle[0])*w)),
+				Math.round((middle[1]+(end[1]-middle[1])*w)),
+				Math.round((middle[2]+(end[2]-middle[2])*w)),
+			]
+		}
+		else{
+			w = progress*2
+			color = [
+				Math.round((start[0]+(middle[0]-start[0])*w)),
+				Math.round((start[1]+(middle[1]-start[1])*w)),
+				Math.round((start[2]+(middle[2]-start[2])*w)),
+			]
+		}
+		console.log (color);
+		let width = progress*280;
+		if(progress>0)
+		{
+			barHTML = `<span>Today tasks:</span><div class="progress-bg">
+					<div class="progress-in">
+					</div>
+				</div>`;
+		}
+		else {
+			barHTML = `<span>Today tasks:</span><div class="progress-bg">
+					<div class="progress-in">
+					</div>
+				</div>`;
+		}
+		$(".progress-in").css("background-color", "rgb("+color[0]+","+color[1]+","+color[2]+")")
+		$(".progress-in").css("width", width + "px")
+	})
+	
+}
+
+//USUWANIE TASKOW
+$('#todo-tab').on("click", "li", function(e)
+{
+	var id=e.target.id;
+	chrome.storage.sync.get(['tasklist'], function (result){
+		for(var i=0; i<result.tasklist.length; i++) {
+			for(key in result.tasklist[i]) {
+			  if(result.tasklist[i][key]==id)
+			  {
+			  console.log(i);
+			  result.tasklist[i].status="done";
+			  chrome.storage.sync.set({tasklist: result.tasklist})
+			  }
+			}
+		  }
+		  
+	})
+	updateProgressBar();
+	refreshStats();
 })
+
+function refreshStats()
+{
+	console.log("test");
+	chrome.storage.sync.get(['tasklist'], function(result){
+		chrome.storage.sync.get(['stats'], function(result2){
+			console.log(result2.stats);
+			let stats=result2.stats;
+			stats.done++;
+			chrome.storage.sync.set({stats:stats}, function(){					
+				chrome.storage.sync.get(['stats'], function(res){
+					var curTasksArray = result.tasklist.map(function (e) {
+						var temp = 0;
+						if(e.status=="todo") temp++;
+						return temp;
+					})
+					curTasks = curTasksArray.reduce((a,b) => a+b, 0) - 1
+					console.log(curTasks);
+					html2="<span>Current tasks: " + curTasks + "</span><br><span>Done tasks: "+res.stats.done+"</span>"
+					$("#task-stats").empty().append(html2);
+			})
+			
+		})
+	})
+	
+})
+}
 
 $('#lists-tab').on('click', 'li', function (e) {
 	e.preventDefault()
@@ -323,6 +561,7 @@ function addTask(input) {
 			title: matchedTitle ? matchedTitle : 'Zadanie ' + (tasks.length + 1),
 			deadline: '' + date,
 			url: matchedUrl ? matchedUrl : 'https://medium.com/',
+			status: "todo"
 		})
 		chrome.storage.sync.set({ tasklist: tasks }, () => {
 			drawTasks()
@@ -331,11 +570,20 @@ function addTask(input) {
 			})
 		})
 	})
+	chrome.storage.sync.get(['stats'], function(result){
+		let stats=result.stats;
+		stats.total++;
+		chrome.storage.sync.set({stats:stats}, function(e){		console.log(stats)
+			console.log(e)
+		})
+	})
 }
 
 $('.add-task-button').click(function (event) {
 	let input = $('.add-task-input').val()
-	$('.add-task-input').val('')
+
+	$('.add-task-input').val('');
+	updateProgressBar();
 
 	addTask(input)
 })
@@ -344,6 +592,7 @@ $('#add-tasks').keypress(function (e) {
 	if (e.keyCode == 13) {
 		let input = $('.add-task-input').val()
 		$('.add-task-input').val('')
+    updateProgressBar();
 
 		addTask(input)
 	}

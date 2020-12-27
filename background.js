@@ -6,11 +6,18 @@ let task = {
 	title: 'Zadanie 1',
 	deadline: '' + new Date(),
 	url: 'https://portal.librus.pl/rodzina',
+	status: "todo"
 }
 let task2 = {
 	title: 'Zadanie 2',
 	deadline: '' + new Date(),
 	url: 'https://portal.librus.pl/rodzina',
+	status:"todo"
+}
+
+let stats = {
+	total: 2,
+	done: 0
 }
 
 chrome.storage.sync.set({ tasklist: [task, task2] }, function () {
@@ -18,6 +25,7 @@ chrome.storage.sync.set({ tasklist: [task, task2] }, function () {
 })
 chrome.storage.sync.set({ blacklist: blacklist })
 chrome.storage.sync.set({ workhours: workhours })
+chrome.storage.sync.set({stats:stats})
 
 chrome.webNavigation.onCommitted.addListener(
 	function (d) {
