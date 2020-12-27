@@ -1,6 +1,5 @@
 
-function displayTasks()
-{
+function drawTasks() {
 	chrome.storage.sync.get(['tasklist'], function (result) {
 		var html = result.tasklist.map(function (e) {
 			var unit
@@ -38,8 +37,7 @@ function displayTasks()
                     `
 			}
 		})
-		$("#tood-tab ul").empty()
-		$('#todo-tab ul').append(html)
+		$('#todo-tab ul').empty().append(html)
 	})
 }
 
@@ -53,7 +51,7 @@ $(document).ready(function () {
 			console.log(e)
 		}
 	)
-	displayTasks()
+	drawTasks()
 	chrome.storage.sync.get(['workhours'], function (e) {
 		$('#start-day option:selected').attr('selected', false)
 		$('#start-day option')
@@ -95,10 +93,11 @@ $(document).ready(function () {
 /*
 	recognition.continuous = true
 	recognition.interimResults = false
-	recognition.lang = 'en'
+	// recognition.lang = 'en'
 	recognition.onerror = (e) => {
 		console.log(e)
-		if (e.error == 'not-allowed') location.href = 'chrome-extension://lakepiipmgnhgbmnpbhaaclnchoniknl/popup.html'
+		if (e.error == 'not-allowed')
+			window.location.href = 'chrome-extension://lakepiipmgnhgbmnpbhaaclnchoniknl/popup.html'
 	}
 
 	recognition.start()
@@ -178,13 +177,11 @@ $('.menu-button').click(function (event) {
 })
 
 $('.menu-side-button').click(function (event) {
-	var self = event.target.id + '-tab'
 	$('.menu-side-button').removeClass('active')
 	$(this).addClass('active')
-	console.log(self)
 	$('.tab').addClass('hidden')
-	$('#' + self).removeClass('hidden')
-	if (self == 'lists-tab') {
+	$('#' + this.id + '-tab').removeClass('hidden')
+	if (this.id + '-tab' == 'lists-tab') {
 		$('#wrapper').removeClass().addClass('dark')
 	} else {
 		$('#wrapper').removeClass().addClass('white')
@@ -203,21 +200,6 @@ $('.tab').on('click', 'li', function (event) {
 		})
 })
 
-
-
-
-$('#working-time select').change(function (e) {
-	var name = $(this).attr('id')
-	var selected = $(this).val()
-	chrome.storage.sync.set({ name: selected })
-})
-
-$('#working-time input').change(function (e) {
-	var name = $(this).attr('id')
-	var selected = $(this).val()
-	chrome.storage.sync.set({ name: selected })
-})
-
 $('.add-bl').click(function () {
 	chrome.tabs.getSelected(null, function (tab) {
 		var url = tab.url
@@ -228,13 +210,21 @@ $('.add-bl').click(function () {
 		})
 	})
 })
-$('.add-wh').click(function (ev) {
-	let f = parseInt($('.wh-from').val().split(':')[0]) * 60 + parseInt($('.wh-from').val().split(':')[1])
-	let t = parseInt($('.wh-to').val().split(':')[0]) * 60 + parseInt($('.wh-to').val().split(':')[1])
-	let s = $('#start-day').val()
-	let e = $('#end-day').val()
-	console.log(f, t, s, e)
-	chrome.storage.sync.set({ workhours: [f, t, s, e] })
+
+$('.working-time').change(function (ev) {
+	let wh = []
+	chrome.storage.sync.get(['workhours'], function (e) {
+		wh = e.workhours
+		if (ev.target.id == 'start-day' || ev.target.id == 'end-day') {
+			wh[2] = $('#start-day').val()
+			wh[3] = $('#end-day').val()
+		} else if (ev.target.id == 'wh-from' || ev.target.id == 'wh-to') {
+			wh[0] = parseInt($('#wh-from').val().split(':')[0]) * 60 + parseInt($('#wh-from').val().split(':')[1])
+			wh[1] = parseInt($('#wh-to').val().split(':')[0]) * 60 + parseInt($('#wh-to').val().split(':')[1])
+		}
+		console.log(wh)
+		chrome.storage.sync.set({ workhours: wh })
+	})
 })
 $(".add-task-button").click(function()
 {
@@ -255,6 +245,7 @@ $('#lists-tab').on('click', 'li', function (e) {
 })
 
 chrome.storage.sync.onChanged.addListener(function (e) {
+	chrome.storage.sync.get(['tasklist'], function (e) {})
 	chrome.storage.sync.get(['blacklist'], function (result) {
 		var html = result.blacklist.map(function (e) {
 			return `
@@ -263,17 +254,12 @@ chrome.storage.sync.onChanged.addListener(function (e) {
             </li>
             `
 		})
-		$('#lists-tab ul').empty()
-		$('#lists-tab ul').append(html)
+		$('#lists-tab ul').empty().append(html)
 	})
 })
 
 function addTask(input) {
-	console.log(input)
-	let keyword = ['tomorrow', 'today', 'at', 'by', 'due', 'till', 'in', 'in a', 'since', 'untill']
 	let urlkeyword = ['.pl', '.org', '.gov', '.com', '.eu', '.edu', '.it', '.io']
-
-	let matchedTitle = input.split(' ')[0]
 
 	let matchedUrl = urlkeyword.forEach((e, i) => {
 		if (input.search(e) > 0) {
@@ -303,9 +289,9 @@ function addTask(input) {
 		console.log(match[0], match[1], match, date)
 	}
 
-	if (input.match(rd)) {
-		let matchrd = input.match(rd)
+	let matchrd = input.match(rd)
 
+	if (matchrd) {
 		switch (matchrd[0]) {
 			case 'tomorrow':
 				console.log(matchrd)
@@ -316,7 +302,12 @@ function addTask(input) {
 			default:
 				break
 		}
+	} else {
+		date.setDate(date.getDate() + 1)
 	}
+
+	let matchedTitle = input.replace(match ? match : '', '').replace(matchrd ? matchrd[0] : '', '')
+
 	chrome.storage.sync.get(['tasklist'], function (e) {
 		let tasks = e.tasklist
 		console.log(date)
@@ -326,6 +317,7 @@ function addTask(input) {
 			url: matchedUrl ? matchedUrl : 'https://medium.com/',
 		})
 		chrome.storage.sync.set({ tasklist: tasks }, () => {
+			drawTasks()
 			chrome.storage.sync.get(['tasklist'], function (e) {
 				console.log(e.tasklist)
 			})
