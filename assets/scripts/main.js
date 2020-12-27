@@ -1,3 +1,4 @@
+
 function drawTasks() {
 	chrome.storage.sync.get(['tasklist'], function (result) {
 		var html = result.tasklist.map(function (e) {
@@ -19,7 +20,7 @@ function drawTasks() {
 			if (left > 0) {
 				left += unit
 				return `
-                    <li class="task on-time">${e.title}
+					<li class="task on-time" id="${e.title}">${e.title}
                         <br><span>
                     ${left}
                     </span>
@@ -28,7 +29,7 @@ function drawTasks() {
 			} else {
 				left = 'Late by ' + -1 * left + unit
 				return `
-                    <li class="task late">${e.title}
+                    <li class="task late" id="${e.title}">${e.title}
                         <br><span>
                     ${left}
                     </span>
@@ -51,7 +52,6 @@ $(document).ready(function () {
 		}
 	)
 	drawTasks()
-
 	chrome.storage.sync.get(['workhours'], function (e) {
 		$('#start-day option:selected').attr('selected', false)
 		$('#start-day option')
@@ -88,9 +88,9 @@ $(document).ready(function () {
 		$('#lists-tab ul').append(html)
 	})
 
-	const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
-	const recognition = new SpeechRecognition()
-
+	//const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
+	//const recognition = new SpeechRecognition()
+/*
 	recognition.continuous = true
 	recognition.interimResults = false
 	// recognition.lang = 'en'
@@ -136,7 +136,37 @@ $(document).ready(function () {
 			addTask(t)
 			s = false
 		}
-	}
+	}*/
+})
+//USUWANIE TASKOW
+$('#todo-tab').on("click", "li", function(e)
+{
+	var id=e.target.id;
+	chrome.storage.sync.get(['tasklist'], function (result){
+		for(var i=0; i<result.tasklist.length; i++) {
+			for(key in result.tasklist[i]) {
+			  if(result.tasklist[i][key]==id)
+			  {
+			  console.log(i);
+			  result.tasklist.splice(i, 1);
+			  chrome.storage.sync.set({tasklist: result.tasklist})
+			  }
+			}
+		  }
+	})
+})
+
+$('#lists-tab').on('click', 'li', function (e) {
+	e.preventDefault()
+	url = $(this).attr('id')
+	chrome.storage.sync.get(['blacklist'], function (result) {
+		const isDeleted = (element) => element == url
+		var index = result.blacklist.findIndex(isDeleted)
+		result.blacklist.splice(index, 1)
+		console.log(index)
+		console.log(url)
+		chrome.storage.sync.set({ blacklist: result.blacklist })
+	})
 })
 
 $('.menu-button').click(function (event) {
@@ -196,6 +226,10 @@ $('.working-time').change(function (ev) {
 		chrome.storage.sync.set({ workhours: wh })
 	})
 })
+$(".add-task-button").click(function()
+{
+	displayTasks();
+})
 
 $('#lists-tab').on('click', 'li', function (e) {
 	e.preventDefault()
@@ -220,14 +254,11 @@ chrome.storage.sync.onChanged.addListener(function (e) {
             </li>
             `
 		})
-		$('#lists-tab ul').empty()
-		$('#lists-tab ul').append(html)
+		$('#lists-tab ul').empty().append(html)
 	})
 })
 
 function addTask(input) {
-	console.log(input)
-	let keyword = ['tomorrow', 'today', 'at', 'by', 'due', 'till', 'in', 'in a', 'since', 'untill']
 	let urlkeyword = ['.pl', '.org', '.gov', '.com', '.eu', '.edu', '.it', '.io']
 
 	let matchedUrl = urlkeyword.forEach((e, i) => {
