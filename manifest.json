@@ -13,6 +13,6 @@
 			"32": "assets/img/32icon.png"
 		}
 	},
-	"content_security_policy": "script-src 'self' 'sha256-WOdSzz11/3cpqOdrm89LBL2UPwEU9EhbDtMy2OciEhs='",
+
 	"manifest_version": 2
 }
