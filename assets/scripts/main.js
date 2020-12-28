@@ -548,7 +548,7 @@ $(document).on("input", "#add-tasks input", function()
 		left = Math.floor(left / (3600000 * 24 * 14))
 		unit = ' weeks'
 	} else if (Math.abs(left) > 3600000 * 23) {
-		left = Math.floor(left / (3600000 * 24))
+		left = Math.ceil(left / (3600000 * 24))
 		unit = ' days'
 	} else if (Math.abs(left) > 3600000) {
 		left = Math.floor(left / 3600000)
