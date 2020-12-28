@@ -6,6 +6,11 @@
 html 
 {
     width: 350px;
+    min-height:500px;
+}
+body 
+{
+    height: 100%;
 }
 :root{
 --white-bg: #ededed;
@@ -17,7 +22,8 @@ html
 --dark-secondary: #545454;
 
 --active: #41D962;
---wrong: #E7414B;
+--wrong: #EB4024;
+--extra : #D936A7;
 }
 h1 
 {
@@ -29,8 +35,15 @@ input
 {
     background:none;
     border:none;
-    font-size:1.5em;
-    width: 75%;
+    font-size:1em;
+    width: 100%;
+    color:var(--white-bg);
+    height:1em;
+}
+
+input::placeholder
+{
+    color:var(--white-secondary)
 }
 
 .add-bl 
@@ -58,7 +71,6 @@ input
 {
     color:var(--white-primary);
 }
-.white input {color: var(--white-primary);}
 .hidden 
 {
     display: none;
@@ -68,11 +80,12 @@ input
     padding:10px;
     font-size: 1em;
     overflow: hidden;
+    height: 100%;
 }
 .menu-side
 {
     width: 10%;
-    height: 300px;
+    min-height: 500px;
     float: left;
 }
 .menu-side li 
@@ -95,6 +108,7 @@ color: var(--dark-primary);
 }
 .white
 {
+height: 100%;
 background-color: var(--white-bg);
 color:var(--white-primary);
 }
@@ -163,6 +177,7 @@ ul, li {list-style: none;}
 .tab li div {
     float: left;
     width: 50%;
+    text-align: left;
 }
 
 .tab li img{
@@ -170,9 +185,27 @@ ul, li {list-style: none;}
     float:right;
 }
 
+.new img 
+{
+    height: 1.8em !important;
+}
+
 .on-time 
 {
     background-color: var(--active);
+}
+
+.new 
+{
+    background-color: var(--extra);
+}
+
+#add-tasks ul, #add-tasks li{margin:0; height:1.9em;}
+
+.new span 
+{
+    margin-top:-10px;
+    color:var(--white-secondary)
 }
 
 .dark 
@@ -188,21 +221,33 @@ ul, li {list-style: none;}
 .form-input
 {
     margin: 0;
-    font-size: 1em;
+    font-size: .85em;
     margin-top: 20px;
     padding-top: 20px;
     border-top:1px solid var(--white-secondary);
+    width: 100%;
+    text-align: center;
 }
 
 .form-input button 
 {
     font-size: 1.5em;
     color:var(--white-primary);
-    font-weight: 700;
+    font-weight: 300;
     border: none;
     background: none;
     padding: 3px;
     transition: .2s ease all;
+    margin-top:5px;
+}
+
+.form-input .highlighted
+{
+    font-weight: 700;
+    color: var(--active);
+    border-radius: 5px;
+    font-size: .85em;
+    padding: 3px;
 }
 
 .form-input button:hover
@@ -239,18 +284,18 @@ ul, li {list-style: none;}
     position: fixed;
     bottom:25px;
     text-align: center;
-    width: 350px;
+    width: 327px;
     height: 15px;
 }
 
 .progress-bg
 {
-    width: 280px;
+    width: 327px;
     height: 15px;
     float:left;
-    margin-left: 3.4em;
     border-radius: 3px;
     border:1px solid var(--white-secondary);
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
 }
 
 .progress-in 

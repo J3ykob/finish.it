@@ -25,7 +25,7 @@ function drawTasks() {
                         <br><span>
                     ${left}
 					</span></div><div id="${e.title}" class="favicon">
-					<img id="${e.title}" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}"></div>
+					<img id="${e.title}" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}&sz=64"></div>
                     </li>
                     `
 			} else {
@@ -35,13 +35,13 @@ function drawTasks() {
                         <br><span>
 						${left}
 						</span></div><div id="${e.title}" class="favicon">
-						<img src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}"></div>
+						<img src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}&sz=64"></div>
 						</li>
                     `
 			}
 		}
 		})
-		$('#todo-tab ul').empty().append(html)
+		$('#todo-tab #tasks').empty().append(html)
 		chrome.storage.sync.get(['stats'], function(res){
 			var curTasksArray = result.tasklist.map(function (e) {
 				var temp = 0;
@@ -54,6 +54,100 @@ function drawTasks() {
 			$("#task-stats").empty().append(html2);
 		})
 	})
+}
+
+function getDateFromInput(input)
+{
+	let urlkeyword = ['.pl', '.org', '.gov', '.com', '.eu', '.edu', '.it', '.io']
+
+	let matchedUrl = urlkeyword.forEach((e, i) => {
+		if (input.search(e) > 0) {
+			return input.split(e)[0].split(' ')[1] + e + input.split(e)[1].split(' ')[0]
+		}
+	})
+
+	let date = new Date()
+
+	let rd = new RegExp('tomorrow|today', 'g')
+
+	console.log(
+		input.match(
+			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
+		)
+	)
+
+	const match = input.match(
+		/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
+	)
+
+	let pm = input.match(/[0-9](?=(\ ?[pP]\.?[mM]))/g)
+
+	if (match) {
+		date.setMinutes(match[1] ? match[1] : 0)
+		if (match[0] + (pm ? 12 : 0) < new Date().getHours()) {
+			date.setDate(date.getDate() + 1)
+		}
+		date.setHours(parseInt(match[0]) + (pm ? 12 : 0))
+		console.log(match[0], match[1], match, date)
+	}
+
+	let matchrd = input.match(rd)
+
+	if (matchrd) {
+		switch (matchrd[0]) {
+			case 'tomorrow':
+				console.log(matchrd)
+				date.setDate(date.getDate() + 1)
+				break
+			case 'today':
+				break
+			default:
+				break
+		}
+	} else if (!match) {
+		date.setDate(date.getDate() + 1)
+		chrome.storage.sync.get(['workhours'], function (e) {
+			date.setHours(Math.floor(e.workhours[1] / 60))
+			date.setMinutes(0)
+		})
+	}
+
+	let matchedTitle = input
+		.replace(/(?<=([0-9]\ ?))([paPA]\.?[mM]\.?)/g, '')
+		// .replace(match ? (match[1] ? match[0] + ':' + match[1] : match[0]) : '', '')
+		.replace(
+			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$|(?<=[0-9]{1,2})([\:\.](?=[0-9]{2})))/g,
+			''
+		)
+		.replace(matchrd ? matchrd[0] : '', '')
+	return date;
+}
+
+function refreshStats()
+{
+	console.log("test");
+	chrome.storage.sync.get(['tasklist'], function(result){
+		chrome.storage.sync.get(['stats'], function(result2){
+			console.log(result2.stats);
+			let stats=result2.stats;
+			stats.done++;
+			chrome.storage.sync.set({stats:stats}, function(){					
+				chrome.storage.sync.get(['stats'], function(res){
+					var curTasksArray = result.tasklist.map(function (e) {
+						var temp = 0;
+						if(e.status=="todo") temp++;
+						return temp;
+					})
+					curTasks = curTasksArray.reduce((a,b) => a+b, 0) - 1
+					console.log(curTasks);
+					html2="<span>Current tasks: " + curTasks + "</span><br><span>Done tasks: "+res.stats.done+"</span>"
+					$("#task-stats").empty().append(html2);
+			})
+			
+		})
+	})
+	
+})
 }
 
 function drawDate()
@@ -92,9 +186,26 @@ function drawDate()
 	$("h1").append(dateTitle);
 }
 
-$(document).ready(function () {
-	drawDate();
 
+
+function drawNewTask()
+{
+	chrome.tabs.getSelected(null, function (tab) {
+		var url = tab.url
+		let html = `<li class="task new"><div>
+		<input id="new-task-input" class="add-task-input" type="text" placeholder="Text Mom tomorrow" autofocus="true" />
+		<br><span>
+		tomorrow
+		</span></div><div id="" class="favicon">
+		<img id="" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${url}&sz=64"></div>
+		</li>`;
+		$("#add-tasks ul").append(html);
+	})
+}
+
+$(document).ready(function () {
+	drawNewTask()
+	drawDate();
 	navigator.webkitGetUserMedia(
 		{ audio: true },
 		(s) => {
@@ -247,7 +358,7 @@ function drawProgressBar()
 			]
 		}
 		console.log (color);
-		let width = progress*280;
+		let width = progress*327;
 		if(progress>0)
 		{
 			barHTML = `<span>Today tasks:</span><div class="progress-bg">
@@ -323,7 +434,7 @@ function updateProgressBar()
 			]
 		}
 		console.log (color);
-		let width = progress*280;
+		let width = progress*327;
 		if(progress>0)
 		{
 			barHTML = `<span>Today tasks:</span><div class="progress-bg">
@@ -344,7 +455,7 @@ function updateProgressBar()
 }
 
 //USUWANIE TASKOW
-$('#todo-tab').on("click", "li", function(e)
+$('#tasks').on("click", "li", function(e)
 {
 	var id=e.target.id;
 	chrome.storage.sync.get(['tasklist'], function (result){
@@ -354,42 +465,21 @@ $('#todo-tab').on("click", "li", function(e)
 			  {
 			  console.log(i);
 			  result.tasklist[i].status="done";
+			  var deadline = new Date(result.tasklist[i].deadline);
+			  var today = new Date();
+			  if(deadline.getDate()==today.getDate() && deadline.getMonth()==today.getMonth() && deadline.getFullYear()==today.getFullYear())
+			  {
+				updateProgressBar();
+			  }
 			  chrome.storage.sync.set({tasklist: result.tasklist})
 			  }
 			}
 		  }
 		  
 	})
-	updateProgressBar();
 	refreshStats();
 })
 
-function refreshStats()
-{
-	console.log("test");
-	chrome.storage.sync.get(['tasklist'], function(result){
-		chrome.storage.sync.get(['stats'], function(result2){
-			console.log(result2.stats);
-			let stats=result2.stats;
-			stats.done++;
-			chrome.storage.sync.set({stats:stats}, function(){					
-				chrome.storage.sync.get(['stats'], function(res){
-					var curTasksArray = result.tasklist.map(function (e) {
-						var temp = 0;
-						if(e.status=="todo") temp++;
-						return temp;
-					})
-					curTasks = curTasksArray.reduce((a,b) => a+b, 0) - 1
-					console.log(curTasks);
-					html2="<span>Current tasks: " + curTasks + "</span><br><span>Done tasks: "+res.stats.done+"</span>"
-					$("#task-stats").empty().append(html2);
-			})
-			
-		})
-	})
-	
-})
-}
 
 $('#lists-tab').on('click', 'li', function (e) {
 	e.preventDefault()
@@ -423,7 +513,7 @@ $('.menu-side-button').click(function (event) {
 	}
 })
 
-$('.tab').on('click', 'li', function (event) {
+$('#tasks').on('click', 'li', function (event) {
 	event.preventDefault()
 	new Audio('assets/sounds/woosh.mp3').play()
 	$(this)
@@ -433,6 +523,42 @@ $('.tab').on('click', 'li', function (event) {
 			$(this).addClass('hidden')
 			next()
 		})
+})
+
+$('#add-tasks').on('click', 'li', function(e){
+	e.preventDefault();
+	if($(e.target).is("input"))
+	{
+		return false;
+	}
+	else 
+	{
+		console.log("dodano");
+		addTask($('#new-task-input').val());
+		$("#new-task-input").val('');
+		$("#add-tasks span").empty().append("tommorow");
+	}
+})
+
+$(document).on("input", "#add-tasks input", function()
+{
+	var inputDate = new Date(getDateFromInput($("#new-task-input").val()));
+	var left = inputDate - new Date()
+	if (Math.abs(left) > 3600000 * 24 * 14) {
+		left = Math.floor(left / (3600000 * 24 * 14))
+		unit = ' weeks'
+	} else if (Math.abs(left) > 3600000 * 23) {
+		left = Math.floor(left / (3600000 * 24))
+		unit = ' days'
+	} else if (Math.abs(left) > 3600000) {
+		left = Math.floor(left / 3600000)
+		unit = ' hours'
+	} else if (Math.abs(left) >= 0) {
+		left = Math.floor(left / 60000)
+		unit = ' minutes'
+	}
+	if (left<0){left='Late by '+left*-1;}
+	$("#add-tasks span").empty().append(left+unit);
 })
 
 $('.add-bl').click(function () {
@@ -445,6 +571,8 @@ $('.add-bl').click(function () {
 		})
 	})
 })
+
+
 
 $('.working-time').change(function (ev) {
 	let wh = []
