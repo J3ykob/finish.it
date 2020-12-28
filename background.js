@@ -6,18 +6,18 @@ let task = {
 	title: 'Zadanie 1',
 	deadline: '' + new Date(),
 	url: 'https://portal.librus.pl/rodzina',
-	status: "todo"
+	status: 'todo',
 }
 let task2 = {
 	title: 'Zadanie 2',
 	deadline: '' + new Date(),
 	url: 'https://portal.librus.pl/rodzina',
-	status:"todo"
+	status: 'todo',
 }
 
 let stats = {
 	total: 2,
-	done: 0
+	done: 0,
 }
 
 chrome.storage.sync.set({ tasklist: [task, task2] }, function () {
@@ -25,7 +25,7 @@ chrome.storage.sync.set({ tasklist: [task, task2] }, function () {
 })
 chrome.storage.sync.set({ blacklist: blacklist })
 chrome.storage.sync.set({ workhours: workhours })
-chrome.storage.sync.set({stats:stats})
+chrome.storage.sync.set({ stats: stats })
 
 chrome.webNavigation.onCommitted.addListener(
 	function (d) {
@@ -41,12 +41,12 @@ chrome.webNavigation.onCommitted.addListener(
 					let p = Math.min.apply(
 						null,
 						goodList.map((e) => {
-							return Date.now() - e.deadline
+							return Date.now() - new Date(e.deadline).getTime()
 						})
 					)
 
 					let g = goodList.find((e) => {
-						return Date.now() - e.deadline == p
+						return Date.now() - new Date(e.deadline).getTime() == p
 					})
 
 					chrome.tabs.update(d.tabId, {
