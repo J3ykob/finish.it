@@ -41,7 +41,7 @@ function drawTasks() {
 			}
 		})
 		$('#todo-tab #tasks').empty().append(html)
-		chrome.storage.sync.get(['stats'], function(res){
+		chrome.storage.sync.get(['stats'], function (res) {
 			var curTasksArray = result.tasklist.map(function (e) {
 				var temp = 0
 				if (e.status == 'todo') temp++
@@ -55,115 +55,56 @@ function drawTasks() {
 	})
 }
 
-function getDateFromInput(input)
-{
-	let urlkeyword = ['.pl', '.org', '.gov', '.com', '.eu', '.edu', '.it', '.io']
-
-	let matchedUrl = urlkeyword.forEach((e, i) => {
-		if (input.search(e) > 0) {
-			return input.split(e)[0].split(' ')[1] + e + input.split(e)[1].split(' ')[0]
-		}
-	})
-
-	let date = new Date()
-
-	let rd = new RegExp('tomorrow|today', 'g')
-
-	console.log(
-		input.match(
-			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
-		)
-	)
-
-	const match = input.match(
-		/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
-	)
-
-	let pm = input.match(/[0-9](?=(\ ?[pP]\.?[mM]))/g)
-
-	if (match) {
-		date.setMinutes(match[1] ? match[1] : 0)
-		if (match[0] + (pm ? 12 : 0) < new Date().getHours()) {
-			date.setDate(date.getDate() + 1)
-		}
-		date.setHours(parseInt(match[0]) + (pm ? 12 : 0))
-		console.log(match[0], match[1], match, date)
-	}
-
-	let matchrd = input.match(rd)
-
-	if (matchrd) {
-		switch (matchrd[0]) {
-			case 'tomorrow':
-				console.log(matchrd)
-				date.setDate(date.getDate() + 1)
-				break
-			case 'today':
-				break
-			default:
-				break
-		}
-	} else if (!match) {
-		date.setDate(date.getDate() + 1)
-		chrome.storage.sync.get(['workhours'], function (e) {
-			date.setHours(Math.floor(e.workhours[1] / 60))
-			date.setMinutes(0)
-		})
-	}
-
-	let matchedTitle = input
-		.replace(/(?<=([0-9]\ ?))([paPA]\.?[mM]\.?)/g, '')
-		// .replace(match ? (match[1] ? match[0] + ':' + match[1] : match[0]) : '', '')
-		.replace(
-			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$|(?<=[0-9]{1,2})([\:\.](?=[0-9]{2})))/g,
-			''
-		)
-		.replace(matchrd ? matchrd[0] : '', '')
-	return date;
-}
-
-function refreshStats()
-{
-	console.log("test");
-	chrome.storage.sync.get(['tasklist'], function(result){
-		chrome.storage.sync.get(['stats'], function(result2){
-			console.log(result2.stats);
-			let stats=result2.stats;
-			stats.done++;
-			chrome.storage.sync.set({stats:stats}, function(){					
-				chrome.storage.sync.get(['stats'], function(res){
+function refreshStats() {
+	console.log('test')
+	chrome.storage.sync.get(['tasklist'], function (result) {
+		chrome.storage.sync.get(['stats'], function (result2) {
+			console.log(result2.stats)
+			let stats = result2.stats
+			stats.done++
+			chrome.storage.sync.set({ stats: stats }, function () {
+				chrome.storage.sync.get(['stats'], function (res) {
 					var curTasksArray = result.tasklist.map(function (e) {
-						var temp = 0;
-						if(e.status=="todo") temp++;
-						return temp;
+						var temp = 0
+						if (e.status == 'todo') temp++
+						return temp
 					})
-					curTasks = curTasksArray.reduce((a,b) => a+b, 0) - 1
-					console.log(curTasks);
-					html2="<span>Current tasks: " + curTasks + "</span><br><span>Done tasks: "+res.stats.done+"</span>"
-					$("#task-stats").empty().append(html2);
+					curTasks = curTasksArray.reduce((a, b) => a + b, 0) - 1
+					console.log(curTasks)
+					html2 = '<span>Current tasks: ' + curTasks + '</span><br><span>Done tasks: ' + res.stats.done + '</span>'
+					$('#task-stats').empty().append(html2)
+				})
 			})
-			
 		})
 	})
-	
-})
 }
 
-function drawDate()
-{
-	var today = new Date();
-	var weekday = new Array(7);
-	var month = new Array(12);
-	weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-	var dateTitle = weekday[today.getDay()];
-	day=today.getDate();
-	var dayNum;
-	if(day>10) dayNum=day/10;
-	else dayNum = day;
+function drawDate() {
+	var today = new Date()
+	var weekday = new Array(7)
+	var month = new Array(12)
+	weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+	month = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December',
+	]
+	var dateTitle = weekday[today.getDay()]
+	day = today.getDate()
+	var dayNum
+	if (day > 10) dayNum = day / 10
+	else dayNum = day
 
-	switch(dayNum)
-	{
+	switch (dayNum) {
 		case 1:
 			day += 'st'
 			break
@@ -185,10 +126,7 @@ function drawDate()
 	$('h1').append(dateTitle)
 }
 
-
-
-function drawNewTask()
-{
+function drawNewTask() {
 	chrome.tabs.getSelected(null, function (tab) {
 		var url = tab.url
 		let html = `<li class="task new"><div>
@@ -197,14 +135,14 @@ function drawNewTask()
 		tomorrow
 		</span></div><div id="" class="favicon">
 		<img id="" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${url}&sz=64"></div>
-		</li>`;
-		$("#add-tasks ul").append(html);
+		</li>`
+		$('#add-tasks ul').append(html)
 	})
 }
 
 $(document).ready(function () {
 	drawNewTask()
-	drawDate();
+	drawDate()
 	navigator.webkitGetUserMedia(
 		{ audio: true },
 		(s) => {
@@ -360,10 +298,9 @@ function drawProgressBar() {
 				Math.round(start[2] + (middle[2] - start[2]) * w),
 			]
 		}
-		console.log (color);
-		let width = progress*327;
-		if(progress>0)
-		{
+		console.log(color)
+		let width = progress * 327
+		if (progress > 0) {
 			barHTML = `<span>Today tasks:</span><div class="progress-bg">
 					<div class="progress-in">
 					</div>
@@ -439,11 +376,9 @@ function updateProgressBar() {
 			]
 		}
 
-		console.log (color);
-		let width = progress*327;
-		if(progress>0)
-		{
-
+		console.log(color)
+		let width = progress * 327
+		if (progress > 0) {
 			barHTML = `<span>Today tasks:</span><div class="progress-bg">
 					<div class="progress-in">
 					</div>
@@ -460,31 +395,30 @@ function updateProgressBar() {
 }
 
 //USUWANIE TASKOW
-$('#tasks').on("click", "li", function(e)
-{
-	var id=e.target.id;
-	chrome.storage.sync.get(['tasklist'], function (result){
-		for(var i=0; i<result.tasklist.length; i++) {
-			for(key in result.tasklist[i]) {
-			  if(result.tasklist[i][key]==id)
-			  {
-			  console.log(i);
-			  result.tasklist[i].status="done";
-			  var deadline = new Date(result.tasklist[i].deadline);
-			  var today = new Date();
-			  if(deadline.getDate()==today.getDate() && deadline.getMonth()==today.getMonth() && deadline.getFullYear()==today.getFullYear())
-			  {
-				updateProgressBar();
-			  }
-			  chrome.storage.sync.set({tasklist: result.tasklist})
-			  }
+$('#tasks').on('click', 'li', function (e) {
+	var id = e.target.id
+	chrome.storage.sync.get(['tasklist'], function (result) {
+		for (var i = 0; i < result.tasklist.length; i++) {
+			for (key in result.tasklist[i]) {
+				if (result.tasklist[i][key] == id) {
+					console.log(i)
+					result.tasklist[i].status = 'done'
+					var deadline = new Date(result.tasklist[i].deadline)
+					var today = new Date()
+					if (
+						deadline.getDate() == today.getDate() &&
+						deadline.getMonth() == today.getMonth() &&
+						deadline.getFullYear() == today.getFullYear()
+					) {
+						updateProgressBar()
+					}
+					chrome.storage.sync.set({ tasklist: result.tasklist })
+				}
 			}
 		}
 	})
-	refreshStats();
+	refreshStats()
 })
-
-
 
 $('#lists-tab').on('click', 'li', function (e) {
 	e.preventDefault()
@@ -530,41 +464,19 @@ $('#tasks').on('click', 'li', function (event) {
 		})
 })
 
-$('#add-tasks').on('click', 'li', function(e){
-	e.preventDefault();
-	if($(e.target).is("input"))
-	{
-		return false;
-	}
-	else 
-	{
-		console.log("dodano");
-		addTask($('#new-task-input').val());
-		$("#new-task-input").val('');
-		$("#add-tasks span").empty().append("tommorow");
+$('#add-tasks').on('click', 'li', function (e) {
+	e.preventDefault()
+	if ($(e.target).is('input')) {
+		return false
+	} else {
+		console.log('dodano')
+		addTask($('#new-task-input').val())
+		$('#new-task-input').val('')
+		$('#add-tasks span').empty().append('tommorow')
 	}
 })
 
-$(document).on("input", "#add-tasks input", function()
-{
-	var inputDate = new Date(getDateFromInput($("#new-task-input").val()));
-	var left = inputDate - new Date()
-	if (Math.abs(left) > 3600000 * 24 * 14) {
-		left = Math.floor(left / (3600000 * 24 * 14))
-		unit = ' weeks'
-	} else if (Math.abs(left) > 3600000 * 23) {
-		left = Math.ceil(left / (3600000 * 24))
-		unit = ' days'
-	} else if (Math.abs(left) > 3600000) {
-		left = Math.floor(left / 3600000)
-		unit = ' hours'
-	} else if (Math.abs(left) >= 0) {
-		left = Math.floor(left / 60000)
-		unit = ' minutes'
-	}
-	if (left<0){left='Late by '+left*-1;}
-	$("#add-tasks span").empty().append(left+unit);
-})
+$(document).on('input', '#add-tasks input', function () {})
 
 $('.add-bl').click(function () {
 	chrome.tabs.getSelected(null, function (tab) {
@@ -576,8 +488,6 @@ $('.add-bl').click(function () {
 		})
 	})
 })
-
-
 
 $('.working-time').change(function (ev) {
 	let wh = []
@@ -622,86 +532,114 @@ chrome.storage.sync.onChanged.addListener(function (e) {
 	})
 })
 
-function addTask(input) {
-	let urlkeyword = ['.pl', '.org', '.gov', '.com', '.eu', '.edu', '.it', '.io']
+function parseInput(input) {
+	console.log(input)
+	const URLKEYWORDS = ['.pl', '.org', '.gov', '.com', '.eu', '.edu', '.it', '.io']
+	const DATEKEYWORDS = ['tomorrow', 'in a week', 'today', 'in a month', 'in a year', 'in a hour']
+	const GETTIME = input.match(
+		new RegExp(
+			'(((?<=[0-9]{1,2}[\\:\\.])[0-9]{2}|[0-9]{1,2}(?=([\\:\\.][0-9]{2})))|[0-9]{1,2}(?=(\\ ?[paPA]\\.?[Mm]))|(?<=(by|at|till)\\ )[0-9]{1,2}|(\\ [0-9]{1,2}\\ ?)$)',
+			'g'
+		)
+	)
 
-	let i = urlkeyword.find((e, i) => {
-		return input.search(e) > 0
-	})
+	const GETPM = input.match(new RegExp('(?<=[0-9])(\\ ?[pP]\\.?\\ ?[mM]\\.?\\ ?)'))
+	const GETAM = input.match(new RegExp('(?<=[0-9])(\\ ?[aA]\\.?\\ ?[mM]\\.?\\ ?)'))
+	const GETDATE = input.match(
+		new RegExp(
+			'' +
+				DATEKEYWORDS.map((e, i) => {
+					return e + (i == DATEKEYWORDS.length - 1 ? '' : '|')
+				}).join(''),
+			'gi'
+		)
+	)
+	const GETURL = input.match(
+		new RegExp(
+			'' +
+				URLKEYWORDS.map((e, i) => {
+					return e + (i == URLKEYWORDS.length - 1 ? '' : '|')
+				}).join(''),
+			'g'
+		)
+	)
 
-	let matchedUrl = ''
+	const matchedUrl = GETURL
+		? (input.split(GETURL[0])[0].split(' ')[1]
+				? input.split(GETURL[0])[0].split(' ').reverse()[0]
+				: input.split(GETURL[0])[0]) +
+		  GETURL[0] +
+		  (input.split(GETURL[0])[1].split(' ')[0] ? input.split(GETURL[0])[1].split(' ')[0] : input.split(GETURL[0])[1])
+		: ''
 
-	if (i) {
-		matchedUrl = input.split(i)[0].split(' ')[1] + i + input.split(i)[1].split(' ')[0]
-	}
-
+	console.log(GETTIME, GETPM, GETAM, GETDATE, matchedUrl)
 	let date = new Date()
-	console.log(date)
-
-	let rd = new RegExp('tomorrow|today', 'g')
-
-	console.log(
-		input.match(
-			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
-		)
+	date.setHours(
+		GETTIME
+			? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 2]) : parseInt(GETTIME[0])) +
+					(GETPM
+						? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 2]) : parseInt(GETTIME[0]) || 0) == 12
+							? 0
+							: 12
+						: GETAM
+						? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 2]) : parseInt(GETTIME[0]) || 0) == 12
+							? 12
+							: 0
+						: 0)
+			: 23
 	)
+	date.getMinutes() < new Date().getMinutes() ? (date.getHours() <= new Date().getHours() ? date.setDate() + 1 : 0) : 0
 
-	const match = input.match(
-		/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$)/g
-	)
-
-	let pm = input.match(/[0-9](?=(\ ?[pP]\.?[mM]))/g)
-	let am = input.match(/[0-9](?=(\ ?[aA]\.?[mM]))/g)
-
-	if (match) {
-		date.setMinutes(match[1] ? match[1] : 0)
-		if (match[0] + (pm ? 12 : 0) < new Date().getHours()) {
-			date.setDate(date.getDate() + 1)
-		}
-		date.setHours(
-			parseInt(match[0]) + (pm ? (parseInt(match[0]) == 12 ? 0 : 12) : am ? (parseInt(match[0]) == 12 ? 12 : 0) : 0)
-		)
-		console.log(match[0], match[1], match, date)
-	}
-
-	let matchrd = input.match(rd)
-
-	if (matchrd) {
-		switch (matchrd[0]) {
+	date.setMinutes(GETTIME ? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 1]) : 0) : 59)
+	if (GETDATE) {
+		switch (GETDATE[GETDATE.length - 1]) {
 			case 'tomorrow':
-				console.log(matchrd)
 				date.setDate(date.getDate() + 1)
 				break
 			case 'today':
+				date.setDate(date.getDate())
 				break
-			default:
+			case 'in a week':
+				date.setDate(date.getDate() + 7)
 				break
+			case 'in a month':
+				date.setMonth(date.getMonth() + 1)
+				break
+			case 'in a year':
+				date.setFullYear(date.getFullYear() + 1)
+			case 'in a hour':
+				date.setHours(date.getHours() + 1)
 		}
-	} else if (!match) {
-		date.setDate(date.getDate() + 1)
-		chrome.storage.sync.get(['workhours'], function (e) {
-			date.setHours(Math.floor(e.workhours[1] / 60))
-			date.setMinutes(0)
-		})
 	}
 
-	let matchedTitle = input
-		.replace(/(?<=([0-9]\ ?))([paPA]\.?[mM]\.?)/g, '')
-		// .replace(match ? (match[1] ? match[0] + ':' + match[1] : match[0]) : '', '')
+	const matchedTitle = input
+		.replace(GETDATE, '')
 		.replace(
-			/(((?<=[0-9]{1,2}[\:\.])[0-9]{2}|[0-9]{1,2}(?=([\:\.][0-9]{2})))|[0-9]{1,2}(?=(\ ?[paPA]\.?[Mm]))|(till|by|at)(?=\ [0-9]{1,2})|(?<=(by|at|till)\ )[0-9]{1,2}|(\ [0-9]{1,2}\ ?)$|(?<=[0-9]{1,2})([\:\.](?=[0-9]{2})))/g,
+			(GETTIME ? (GETTIME.length > 1 ? GETTIME[0] + input.match(/\.|\:/) + GETTIME[1] : GETTIME[0]) : '') +
+				(GETPM || GETAM ? input.match(/\:?\.?\ ?/) + (GETPM[0] || GETAM[0]) + input.match(/\:?\.?\ ?/) : ''),
 			''
 		)
-		.replace(matchrd ? matchrd[0] : '', '')
-		.replace(matchedUrl ? matchedUrl : '', '')
+		.replace(matchedUrl, '')
+		.replace(/\ *$/, '')
+
+	let returnobj = {
+		date: date,
+		url: matchedUrl,
+		title: matchedTitle,
+	}
+
+	return returnobj
+}
+
+function addTask(input) {
+	const newTask = parseInput(input)
 
 	chrome.storage.sync.get(['tasklist'], function (e) {
 		let tasks = e.tasklist
-		console.log(date)
 		tasks.push({
-			title: matchedTitle ? matchedTitle : 'Zadanie ' + (tasks.length + 1),
-			deadline: '' + date,
-			url: matchedUrl ? matchedUrl : 'https://medium.com/',
+			title: newTask.title ? newTask.title : 'Zadanie ' + (tasks.length + 1),
+			deadline: '' + newTask.date,
+			url: newTask.url ? newTask.url : 'https://medium.com/',
 			status: 'todo',
 		})
 		chrome.storage.sync.set({ tasklist: tasks }, () => {
@@ -745,4 +683,26 @@ $(this).keydown(function (e) {
 		}
 	}
 	$('.add-task-input').val(v)
+	console.log(parseInput(v))
+	var inputDate = new Date(parseInput(v).date)
+	var left = inputDate - new Date()
+	if (Math.abs(left) > 3600000 * 24 * 14) {
+		left = Math.floor(left / (3600000 * 24 * 14))
+		unit = ' weeks'
+	} else if (Math.abs(left) > 3600000 * 23) {
+		left = Math.ceil(left / (3600000 * 24))
+		unit = ' days'
+	} else if (Math.abs(left) > 3600000) {
+		left = Math.floor(left / 3600000)
+		unit = ' hours'
+	} else if (Math.abs(left) >= 0) {
+		left = Math.floor(left / 60000)
+		unit = ' minutes'
+	}
+	if (left < 0) {
+		left = 'Late by ' + left * -1
+	}
+	$('#add-tasks span')
+		.empty()
+		.append(left + unit)
 })
