@@ -564,7 +564,7 @@ function parseInput(input) {
 		)
 	)
 
-	const matchedUrl = GETURL
+	let matchedUrl = GETURL
 		? (input.split(GETURL[0])[0].split(' ')[1]
 				? input.split(GETURL[0])[0].split(' ').reverse()[0]
 				: input.split(GETURL[0])[0]) +
@@ -624,7 +624,7 @@ function parseInput(input) {
 
 	let returnobj = {
 		date: date,
-		url: matchedUrl,
+		url: matchedUrl ? 'https://' + matchedUrl.replace(/https?\:\/\//, '') : '',
 		title: matchedTitle,
 	}
 

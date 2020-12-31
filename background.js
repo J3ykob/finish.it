@@ -38,16 +38,24 @@ chrome.webNavigation.onCommitted.addListener(
 				chrome.storage.sync.get(['tasklist'], function (e) {
 					let goodList = e.tasklist
 
-					let p = Math.min.apply(
-						null,
-						goodList.map((e) => {
-							return Date.now() - new Date(e.deadline).getTime()
-						})
-					)
-
 					let g = goodList.find((e) => {
-						return Date.now() - new Date(e.deadline).getTime() == p
+						const now = Date.now()
+						return (
+							Math.abs(now - new Date(e.deadline).getTime()) ==
+							Math.min.apply(
+								null,
+								goodList.flatMap((e) => {
+									return e.status == 'todo' ? Math.abs(now - new Date(e.deadline).getTime()) : []
+								}, [])
+							)
+						)
 					})
+					console.log(
+						goodList.flatMap((e) => {
+							return e.status == 'todo' ? Math.abs(Date.now() - new Date(e.deadline).getTime()) : []
+						}, []),
+						g
+					)
 
 					chrome.tabs.update(d.tabId, {
 						url: g.url,
