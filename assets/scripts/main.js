@@ -534,7 +534,7 @@ chrome.storage.sync.onChanged.addListener(function (e) {
 
 function parseInput(input) {
 	console.log(input)
-	const URLKEYWORDS = ['.pl', '.org', '.gov', '.com', '.eu', '.edu', '.it', '.io']
+	const URLKEYWORDS = ['pl', 'org', 'gov', 'com', 'eu', 'edu', 'it', 'io']
 	const DATEKEYWORDS = ['tomorrow', 'in a week', 'today', 'in a month', 'in a year', 'in a hour']
 	const GETTIME = input.match(
 		new RegExp(
@@ -558,7 +558,17 @@ function parseInput(input) {
 		new RegExp(
 			'' +
 				URLKEYWORDS.map((e, i) => {
-					return e + (i == URLKEYWORDS.length - 1 ? '' : '|')
+					return '\\.' + e + (i == URLKEYWORDS.length - 1 ? '' : '|')
+				}).join(''),
+			'g'
+		)
+	)
+
+	console.log(
+		new RegExp(
+			'' +
+				URLKEYWORDS.map((e, i) => {
+					return /\./ + e + (i == URLKEYWORDS.length - 1 ? '' : '|')
 				}).join(''),
 			'g'
 		)
@@ -572,7 +582,7 @@ function parseInput(input) {
 		  (input.split(GETURL[0])[1].split(' ')[0] ? input.split(GETURL[0])[1].split(' ')[0] : input.split(GETURL[0])[1])
 		: ''
 
-	console.log(GETTIME, GETPM, GETAM, GETDATE, matchedUrl)
+	console.log(GETTIME, GETPM, GETAM, GETDATE, GETURL, matchedUrl)
 	let date = new Date()
 	date.setHours(
 		GETTIME
