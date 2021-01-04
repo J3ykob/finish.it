@@ -57,7 +57,7 @@ chrome.webNavigation.onCommitted.addListener(
 					)
 
 					chrome.tabs.update(d.tabId, {
-						url: g.url,
+						url: g.url ? g.url : 'https://medium.com/',
 					})
 				})
 				chrome.storage.sync.get(['blacklist'], function (e) {
