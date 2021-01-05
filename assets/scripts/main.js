@@ -8,7 +8,10 @@ function drawTasks() {
 				unit = ' weeks'
 			} else if (Math.abs(left) > 3600000 * 24) {
 				left = Math.floor(left / (3600000 * 24))
-				unit = ' days'
+				if(left>1)
+					unit = ' days';
+				else 
+					unit = ' day';
 			} else if (Math.abs(left) > 3600000) {
 				left = Math.floor(left / 3600000)
 				unit = ' hours'
@@ -24,7 +27,7 @@ function drawTasks() {
                         <br><span>
                     ${left}
 					</span></div><div id="${e.title}" class="favicon">
-					<img id="${e.title}" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}&sz=64"></div>
+					<img  alt="" id="${e.title}" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}&sz=64"></div>
                     </li>
                     `
 				} else {
@@ -34,12 +37,18 @@ function drawTasks() {
                         <br><span>
 						${left}
 						</span></div><div id="${e.title}" class="favicon">
-						<img src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}&sz=64"></div>
+						<img alt="" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e.url}&sz=64"></div>
 						</li>
                     `
 				}
 			}
+			else {return null;}
 		})
+		if(html.every(element => element === null))
+		{
+			html = `<h1 class="message">Enjoy your free time!</h1>`
+		}
+		console.log(html);
 		$('#todo-tab #tasks').empty().append(html)
 		chrome.storage.sync.get(['stats'], function (res) {
 			var curTasksArray = result.tasklist.map(function (e) {
@@ -134,7 +143,7 @@ function drawNewTask() {
 		<br><span>
 		tomorrow
 		</span></div><div id="" class="favicon">
-		<img id="" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${url}&sz=64"></div>
+		<img id="" alt="" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${url}&sz=64"></div>
 		</li>`
 		$('#add-tasks ul').append(html)
 	})
@@ -178,16 +187,7 @@ $(document).ready(function () {
 		)
 	})
 
-	chrome.storage.sync.get(['blacklist'], function (result) {
-		var html = result.blacklist.map(function (e) {
-			return `
-              <li id="${e}" class="blacklisted">
-                ${e.split('//')[1].split('/')[0]}
-              </li>
-              `
-		})
-		$('#lists-tab ul').append(html)
-	})
+	refresh();
 
 	//const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
 	//const recognition = new SpeechRecognition()
@@ -290,13 +290,18 @@ function drawProgressBar() {
 				Math.round(middle[1] + (end[1] - middle[1]) * w),
 				Math.round(middle[2] + (end[2] - middle[2]) * w),
 			]
-		} else {
+		} else if (progress<=1){
 			w = progress * 2
 			color = [
 				Math.round(start[0] + (middle[0] - start[0]) * w),
 				Math.round(start[1] + (middle[1] - start[1]) * w),
 				Math.round(start[2] + (middle[2] - start[2]) * w),
 			]
+		}
+		else 
+		{
+			progress=1;
+			color = end;
 		}
 		console.log(color)
 		let width = progress * 327
@@ -430,6 +435,7 @@ $('#lists-tab').on('click', 'li', function (e) {
 		console.log(index)
 		console.log(url)
 		chrome.storage.sync.set({ blacklist: result.blacklist })
+		refresh();
 	})
 })
 
@@ -505,31 +511,36 @@ $('.working-time').change(function (ev) {
 	})
 })
 
-$('#lists-tab').on('click', 'li', function (e) {
-	e.preventDefault()
-	url = $(this).attr('id')
-	chrome.storage.sync.get(['blacklist'], function (result) {
-		const isDeleted = (element) => element == url
-		var index = result.blacklist.findIndex(isDeleted)
-		result.blacklist.splice(index, 1)
-		console.log(index)
-		console.log(url)
-		chrome.storage.sync.set({ blacklist: result.blacklist })
-	})
-})
-
-chrome.storage.sync.onChanged.addListener(function (e) {
+function refresh()
+{
 	chrome.storage.sync.get(['tasklist'], function (e) {})
 	chrome.storage.sync.get(['blacklist'], function (result) {
 		var html = result.blacklist.map(function (e) {
+			if(e.includes('www.'))
+			{
+				return `
+              <li id="${e}" class="blacklisted"><div>
+				${e.split('//')[1].split('/')[0].split('www.')[1]}<br></div>
+				<div class="favicon">
+						<img alt="" src="https://s2.googleusercontent.com/s2/favicons?domain_url=${e}&sz=64"></div>
+				</div>
+			  </li>
+              `
+			}
+			else 
+			{
 			return `
-            <li class="blacklisted">
-              ${e.split('//')[1].split('/')[0]}
-            </li>
-            `
+              <li id="${e}" class="blacklisted">
+                ${e.split('//')[1].split('/')[0]}
+              </li>
+			  `
+			}
 		})
-		$('#lists-tab ul').empty().append(html)
+		$('#blacklist-list').empty().append(html)
 	})
+}
+chrome.storage.sync.onChanged.addListener(function (e) {
+	refresh();
 })
 
 function parseInput(input) {
@@ -701,7 +712,10 @@ $(this).keydown(function (e) {
 		unit = ' weeks'
 	} else if (Math.abs(left) > 3600000 * 23) {
 		left = Math.ceil(left / (3600000 * 24))
-		unit = ' days'
+		if(left>1)
+			unit = ' days';
+		else 
+			unit = ' day';
 	} else if (Math.abs(left) > 3600000) {
 		left = Math.floor(left / 3600000)
 		unit = ' hours'

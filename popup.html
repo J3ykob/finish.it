@@ -2,6 +2,8 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="style.css" />
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 		<style></style>
 	</head>
 	<body>
@@ -45,20 +47,6 @@
 							</g>
 						</svg>
 					</li>
-					<li id="settings" class="menu-side-button">
-						<svg
-							id="settings"
-							enable-background="new 0 0 24 24"
-							height="25"
-							viewBox="0 0 24 24"
-							width="25"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="m22.683 9.394-1.88-.239c-.155-.477-.346-.937-.569-1.374l1.161-1.495c.47-.605.415-1.459-.122-1.979l-1.575-1.575c-.525-.542-1.379-.596-1.985-.127l-1.493 1.161c-.437-.223-.897-.414-1.375-.569l-.239-1.877c-.09-.753-.729-1.32-1.486-1.32h-2.24c-.757 0-1.396.567-1.486 1.317l-.239 1.88c-.478.155-.938.345-1.375.569l-1.494-1.161c-.604-.469-1.458-.415-1.979.122l-1.575 1.574c-.542.526-.597 1.38-.127 1.986l1.161 1.494c-.224.437-.414.897-.569 1.374l-1.877.239c-.753.09-1.32.729-1.32 1.486v2.24c0 .757.567 1.396 1.317 1.486l1.88.239c.155.477.346.937.569 1.374l-1.161 1.495c-.47.605-.415 1.459.122 1.979l1.575 1.575c.526.541 1.379.595 1.985.126l1.494-1.161c.437.224.897.415 1.374.569l.239 1.876c.09.755.729 1.322 1.486 1.322h2.24c.757 0 1.396-.567 1.486-1.317l.239-1.88c.477-.155.937-.346 1.374-.569l1.495 1.161c.605.47 1.459.415 1.979-.122l1.575-1.575c.542-.526.597-1.379.127-1.985l-1.161-1.494c.224-.437.415-.897.569-1.374l1.876-.239c.753-.09 1.32-.729 1.32-1.486v-2.24c.001-.757-.566-1.396-1.316-1.486zm-10.683 7.606c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"
-							/>
-						</svg>
-					</li>
 				</ul>
 			</div>
 			<div class="half"><h1></h1></div>
@@ -74,12 +62,17 @@
 				</div>
 			</div>
 			<div class="tab hidden" id="lists-tab">
-				<ul></ul>
-				<div>
-					<button class="add-bl" type="submit">Add current page</button>
-				</div>
+				<ul id="blacklist-list"></ul>
+				<ul>
+					<li class="blacklisted new add-bl"><div>
+						Add current page</div>
+						<div class="favicon">
+								<img alt="" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/plus-512.png">
+						</div>
+					  </li>
+				</ul>
+				<div id="line"></div>
 				<div id="working-time">
-					<h3>Working time</h3>
 					<select id="start-day" class="working-time">
 						<option value="1">Monday</option>
 						<option value="2">Tuesday</option>
@@ -98,10 +91,10 @@
 						<option selected value="5">Friday</option>
 						<option value="6">Saturday</option>
 						<option value="0">Sunday</option>
-					</select>
-					<input id="wh-from" class="working-time" value="09:00" type="time" />
-					<label>to</label>
-					<input id="wh-to" class="working-time" value="17:00" type="time" />
+					</select><Br>
+					<input id="wh-from" class="working-time" type="time" />
+					<label>to </label>
+					<input id="wh-to" class="working-time" type="time" />
 				</div>
 			</div>
 			<div id="progress">
