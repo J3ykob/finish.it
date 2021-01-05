@@ -5,6 +5,7 @@
 html {
 	width: 350px;
 	min-height: 500px;
+	font-family: 'Open Sans', sans-serif;
 }
 body {
 	height: 100%;
@@ -14,19 +15,25 @@ body {
 	--white-primary: #545454;
 	--white-secondary: #bbbbbb;
 
-	--dark-bg: #12100f;
+	--dark-bg: #222;
 	--dark-primary: #bbbbbb;
 	--dark-secondary: #545454;
 
 	--active: #41d962;
-	--wrong: #eb4024;
-	--extra: #d936a7;
+	--wrong: #FF385F;
+	--extra: #009EFF;
 }
 h1 {
-	margin-left: 0.7em;
+	margin-left: 0.4em;
 	color: var(--active);
 	line-height: 0.7em;
 }
+
+h3 
+{
+	font-weight: 500;
+}
+
 input {
 	background: none;
 	border: none;
@@ -48,7 +55,6 @@ input::placeholder {
 	border: none;
 	font-size: 1.5em;
 	border-radius: 5px;
-	border: 2px solid var(--wrong);
 	transition: 0.3s ease all;
 }
 .add-bl:hover {
@@ -158,7 +164,7 @@ li {
 	background-color: var(--wrong);
 }
 
-.tab li:hover {
+.task:hover {
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
 }
 
@@ -166,6 +172,7 @@ li {
 	float: left;
 	width: 50%;
 	text-align: left;
+	white-space: nowrap;
 }
 
 .tab li img {
@@ -196,12 +203,28 @@ li {
 	color: var(--white-secondary);
 }
 
-.dark {
-	background-color: black;
+.blacklisted {
+	background-color: var(--wrong);
+	box-shadow: 0 0 5px rgba(255, 56, 95, .4) !important;
 }
 
-.blacklisted:hover {
-	background-color: var(--wrong);
+.blacklisted:hover{
+	box-shadow: 0 0 10px rgba(255, 56, 95, .9) !important;
+}
+
+.blacklisted.new 
+{
+	background-color: var(--extra);
+	box-shadow: 0 0 2px var(--extra) !important;
+}
+.blacklisted.new:hover 
+{
+	box-shadow: 0 0 10px var(--extra) !important;
+}
+
+.blacklisted.new img 
+{
+	height: 1.65em !important;
 }
 
 .form-input {
@@ -238,12 +261,44 @@ li {
 	border-radius: 5px;
 	background-color: var(--active) !important;
 }
+
+#line 
+{
+	border-top:1px solid var(--dark-secondary);
+	height: 1px;
+	width:100%;
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+}
 #working-time {
 	margin-top: 10px;
+	border-radius: 5px;
+	color:var(--white-bg);
+	line-height: 2.1em;
+	text-align: center;
 }
 
 #working-time input {
 	width: auto;
+	font-size: 1.5em;
+	font-family: 'Open Sans', sans-serif;
+	margin: 0 5px;
+}
+
+#working-time select 
+{
+	background: none;
+	border:1px solid var(--white-bg);
+	border-radius:5px;
+	padding:2px;
+	margin: 0 5px;
+	color: var(--white-bg);
+}
+
+.a::-webkit-calendar-picker-indicator {
+    width: 64px;
+    height: 64px;
+    background: none;
 }
 
 .half {
@@ -284,4 +339,9 @@ li {
 
 #new-task-input:focus {
 	outline: none;
+}
+
+.message 
+{
+	margin: 1em 0 0 0;
 }
