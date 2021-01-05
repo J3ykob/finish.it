@@ -290,13 +290,18 @@ function drawProgressBar() {
 				Math.round(middle[1] + (end[1] - middle[1]) * w),
 				Math.round(middle[2] + (end[2] - middle[2]) * w),
 			]
-		} else {
+		} else if (progress<=1){
 			w = progress * 2
 			color = [
 				Math.round(start[0] + (middle[0] - start[0]) * w),
 				Math.round(start[1] + (middle[1] - start[1]) * w),
 				Math.round(start[2] + (middle[2] - start[2]) * w),
 			]
+		}
+		else 
+		{
+			progress=1;
+			color = end;
 		}
 		console.log(color)
 		let width = progress * 327
@@ -649,7 +654,7 @@ function parseInput(input) {
 
 function addTask(input) {
 	const newTask = parseInput(input)
-	
+
 	chrome.storage.sync.get(['tasklist'], function (e) {
 		let tasks = e.tasklist
 		tasks.push({
