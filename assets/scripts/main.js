@@ -1,3 +1,44 @@
+function updateNewTaskField(e, value) {
+	let v = value ? value : $('.add-task-input').val()
+	console.log(v)
+	if (e) {
+		if (e.keyCode == 13) {
+			updateProgressBar()
+			addTask(v)
+			v = ''
+		} else if (document.activeElement != document.querySelector('.add-task-input')) {
+			if (e.keyCode > 31 && e.keyCode < 127) {
+				v += e.key
+			} else if (e.keyCode == 8) {
+				v = v.slice(0, -1)
+			}
+		}
+	}
+	$('.add-task-input').val(v)
+	console.log(parseInput(v))
+	var inputDate = new Date(parseInput(v).date)
+	var left = inputDate - new Date()
+	if (Math.abs(left) > 3600000 * 24 * 14) {
+		left = Math.floor(left / (3600000 * 24 * 14))
+		unit = ' weeks'
+	} else if (Math.abs(left) > 3600000 * 23) {
+		left = Math.ceil(left / (3600000 * 24))
+		unit = ' days'
+	} else if (Math.abs(left) > 3600000) {
+		left = Math.floor(left / 3600000)
+		unit = ' hours'
+	} else if (Math.abs(left) >= 0) {
+		left = Math.floor(left / 60000)
+		unit = ' minutes'
+	}
+	if (left < 0) {
+		left = 'Late by ' + left * -1
+	}
+	$('#add-tasks span')
+		.empty()
+		.append(left + unit)
+}
+
 function drawTasks() {
 	chrome.storage.sync.get(['tasklist'], function (result) {
 		var html = result.tasklist.map(function (e) {
@@ -56,7 +97,6 @@ function drawTasks() {
 }
 
 function refreshStats() {
-	console.log('test')
 	chrome.storage.sync.get(['tasklist'], function (result) {
 		chrome.storage.sync.get(['stats'], function (result2) {
 			console.log(result2.stats)
@@ -154,6 +194,7 @@ $(document).ready(function () {
 	)
 	drawTasks()
 	chrome.storage.sync.get(['workhours'], function (e) {
+		console.log(e)
 		$('#start-day option:selected').attr('selected', false)
 		$('#start-day option')
 			.eq(e.workhours[2] - 1)
@@ -189,12 +230,12 @@ $(document).ready(function () {
 		$('#lists-tab ul').append(html)
 	})
 
-	//const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
-	//const recognition = new SpeechRecognition()
-	/*
+	const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
+	const recognition = new SpeechRecognition()
+
 	recognition.continuous = true
-	recognition.interimResults = false
-	// recognition.lang = 'en'
+	recognition.interimResults = true
+	//recognition.lang = 'en'
 	recognition.onerror = (e) => {
 		console.log(e)
 		if (e.error == 'not-allowed')
@@ -207,37 +248,27 @@ $(document).ready(function () {
 
 	let s = false
 
-	recognition.onspeechstart = (e) => {
-		console.log(e)
-		if (!s) {
-			console.log('looking for "okay"', s)
-			setTimeout(() => {
-				recognition.stop()
-			}, 650)
-		}
-	}
+	recognition.onspeechstart = (e) => {}
 
 	recognition.onstart = (e) => {
 		console.log('sr started')
 	}
-	recognition.onend = (e) => {
-		console.log(e)
-		recognition.start()
-	}
+	recognition.onend = (e) => {}
 
 	recognition.onresult = (e) => {
-		console.log(e)
-		const t = e.results[e.resultIndex][0].transcript
-		console.log(t)
-		if (t.match(/okay|set|okej|ok/gi)) {
-			console.log(t)
-			s = true
-		} else if (s) {
-			console.log(t)
-			addTask(t)
-			s = false
-		}
-	}*/
+		updateNewTaskField(null, e.results[e.resultIndex][0].transcript)
+		// console.log(e)
+		// const t = e.results[e.resultIndex][0].transcript
+		// console.log(t)
+		// if (t.match(/okay|set|okej|ok/gi)) {
+		// 	console.log(t)
+		// 	s = true
+		// } else if (s) {
+		// 	console.log(t)
+		// 	addTask(t)
+		// 	s = false
+		// }
+	}
 })
 
 drawProgressBar()
@@ -494,14 +525,17 @@ $('.working-time').change(function (ev) {
 	chrome.storage.sync.get(['workhours'], function (e) {
 		wh = e.workhours
 		if (ev.target.id == 'start-day' || ev.target.id == 'end-day') {
-			wh[2] = $('#start-day').val()
-			wh[3] = $('#end-day').val()
+			wh[2] = $('#start-day').val() == 0 ? 7 : $('#start-day').val()
+			wh[3] = $('#end-day').val() == 0 ? 7 : $('#end-day').val()
 		} else if (ev.target.id == 'wh-from' || ev.target.id == 'wh-to') {
 			wh[0] = parseInt($('#wh-from').val().split(':')[0]) * 60 + parseInt($('#wh-from').val().split(':')[1])
 			wh[1] = parseInt($('#wh-to').val().split(':')[0]) * 60 + parseInt($('#wh-to').val().split(':')[1])
 		}
 		console.log(wh)
 		chrome.storage.sync.set({ workhours: wh })
+		chrome.storage.sync.get(['workhours'], function (e) {
+			console.log(e)
+		})
 	})
 })
 
@@ -598,9 +632,9 @@ function parseInput(input) {
 						: 0)
 			: 23
 	)
+	date.setMinutes(GETTIME ? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 1]) : 0) : 59)
 	date.getMinutes() < new Date().getMinutes() ? (date.getHours() <= new Date().getHours() ? date.setDate() + 1 : 0) : 0
 
-	date.setMinutes(GETTIME ? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 1]) : 0) : 59)
 	if (GETDATE) {
 		switch (GETDATE[GETDATE.length - 1]) {
 			case 'tomorrow':
@@ -644,27 +678,29 @@ function parseInput(input) {
 function addTask(input) {
 	const newTask = parseInput(input)
 
-	chrome.storage.sync.get(['tasklist'], function (e) {
-		let tasks = e.tasklist
-		tasks.push({
-			title: newTask.title ? newTask.title : 'Zadanie ' + (tasks.length + 1),
-			deadline: '' + newTask.date,
-			url: newTask.url ? newTask.url : 'https://medium.com/',
-			status: 'todo',
-		})
-		chrome.storage.sync.set({ tasklist: tasks }, () => {
-			drawTasks()
-			chrome.storage.sync.get(['tasklist'], function (e) {
-				console.log(e.tasklist)
+	chrome.tabs.getSelected(null, function (tab) {
+		chrome.storage.sync.get(['tasklist'], function (e) {
+			let tasks = e.tasklist
+			tasks.push({
+				title: newTask.title ? newTask.title : 'Zadanie ' + (tasks.length + 1),
+				deadline: '' + newTask.date,
+				url: newTask.url ? newTask.url : tab.url ? tab.url : 'https://medium.com/',
+				status: 'todo',
+			})
+			chrome.storage.sync.set({ tasklist: tasks }, () => {
+				drawTasks()
+				chrome.storage.sync.get(['tasklist'], function (e) {
+					console.log(e.tasklist)
+				})
 			})
 		})
-	})
-	chrome.storage.sync.get(['stats'], function (result) {
-		let stats = result.stats
-		stats.total++
-		chrome.storage.sync.set({ stats: stats }, function (e) {
-			console.log(stats)
-			console.log(e)
+		chrome.storage.sync.get(['stats'], function (result) {
+			let stats = result.stats
+			stats.total++
+			chrome.storage.sync.set({ stats: stats }, function (e) {
+				console.log(stats)
+				console.log(e)
+			})
 		})
 	})
 }
@@ -679,40 +715,7 @@ $('.add-task-button').click(function (event) {
 })
 
 $(this).keydown(function (e) {
-	let v = $('.add-task-input').val()
-	console.log(e)
-	if (e.keyCode == 13) {
-		updateProgressBar()
-		addTask(v)
-		v = ''
-	} else if (document.activeElement != document.querySelector('.add-task-input')) {
-		if (e.keyCode > 31 && e.keyCode < 127) {
-			v += e.key
-		} else if (e.keyCode == 8) {
-			v = v.slice(0, -1)
-		}
+	if ($('#lists-tab').hasClass('hidden')) {
+		updateNewTaskField(e)
 	}
-	$('.add-task-input').val(v)
-	console.log(parseInput(v))
-	var inputDate = new Date(parseInput(v).date)
-	var left = inputDate - new Date()
-	if (Math.abs(left) > 3600000 * 24 * 14) {
-		left = Math.floor(left / (3600000 * 24 * 14))
-		unit = ' weeks'
-	} else if (Math.abs(left) > 3600000 * 23) {
-		left = Math.ceil(left / (3600000 * 24))
-		unit = ' days'
-	} else if (Math.abs(left) > 3600000) {
-		left = Math.floor(left / 3600000)
-		unit = ' hours'
-	} else if (Math.abs(left) >= 0) {
-		left = Math.floor(left / 60000)
-		unit = ' minutes'
-	}
-	if (left < 0) {
-		left = 'Late by ' + left * -1
-	}
-	$('#add-tasks span')
-		.empty()
-		.append(left + unit)
 })
