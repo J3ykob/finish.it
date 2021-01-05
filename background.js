@@ -1,30 +1,17 @@
 let blacklist = ['https://www.facebook.com/', 'https://www.youtube.com/']
 let workhours = [480, 960, 1, 5]
+let tasks = [
+	{
+		title: 'Your first task',
+		url: 'https://medium.com/',
+		deadline: new Date(),
+	},
+]
 
-// let task = {
-// 	title: 'Zadanie 1',
-// 	deadline: '' + new Date(),
-// 	url: 'https://portal.librus.pl/rodzina',
-// 	status: 'todo',
-// }
-// let task2 = {
-// 	title: 'Zadanie 2',
-// 	deadline: '' + new Date(),
-// 	url: 'https://portal.librus.pl/rodzina',
-// 	status: 'todo',
-// }
-
-// let stats = {
-// 	total: 2,
-// 	done: 0,
-// }
-
-// chrome.storage.sync.set({ tasklist: [task, task2] }, function () {
-// 	console.log('Value is set to ' + [task, task2])
-// })
-// chrome.storage.sync.set({ blacklist: blacklist })
-// chrome.storage.sync.set({ workhours: workhours })
-// chrome.storage.sync.set({ stats: stats })
+chrome.storage.sync.set({ workhours: workhours }, function (e) {})
+chrome.storage.sync.set({ blacklist: blacklist }, function (e) {})
+chrome.storage.sync.set({ tasklist: tasks }, function (e) {})
+chrome.storage.sync.set({ stats: { done: 0 } }, function (e) {})
 
 chrome.webNavigation.onCommitted.addListener(
 	function (d) {

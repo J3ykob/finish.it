@@ -1,6 +1,7 @@
 function updateNewTaskField(e, value) {
 	let v = value ? value : $('.add-task-input').val()
 	console.log(v)
+	console.log(parseInput(v))
 	if (e) {
 		if (e.keyCode == 13) {
 			updateProgressBar()
@@ -15,7 +16,6 @@ function updateNewTaskField(e, value) {
 		}
 	}
 	$('.add-task-input').val(v)
-	console.log(parseInput(v))
 	var inputDate = new Date(parseInput(v).date)
 	var left = inputDate - new Date()
 	if (Math.abs(left) > 3600000 * 24 * 14) {
@@ -49,10 +49,8 @@ function drawTasks() {
 				unit = ' weeks'
 			} else if (Math.abs(left) > 3600000 * 24) {
 				left = Math.floor(left / (3600000 * 24))
-				if(left>1)
-					unit = ' days';
-				else 
-					unit = ' day';
+				if (left > 1) unit = ' days'
+				else unit = ' day'
 			} else if (Math.abs(left) > 3600000) {
 				left = Math.floor(left / 3600000)
 				unit = ' hours'
@@ -82,14 +80,14 @@ function drawTasks() {
 						</li>
                     `
 				}
+			} else {
+				return null
 			}
-			else {return null;}
 		})
-		if(html.every(element => element === null))
-		{
+		if (html.every((element) => element === null)) {
 			html = `<h1 class="message">Enjoy your free time!</h1>`
 		}
-		console.log(html);
+		console.log(html)
 		$('#todo-tab #tasks').empty().append(html)
 		chrome.storage.sync.get(['stats'], function (res) {
 			var curTasksArray = result.tasklist.map(function (e) {
@@ -228,7 +226,7 @@ $(document).ready(function () {
 		)
 	})
 
-	refresh();
+	refresh()
 
 	const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
 	const recognition = new SpeechRecognition()
@@ -256,7 +254,7 @@ $(document).ready(function () {
 	recognition.onend = (e) => {}
 
 	recognition.onresult = (e) => {
-		updateNewTaskField(null, e.results[e.resultIndex][0].transcript)
+		// updateNewTaskField(null, e.results[e.resultIndex][0].transcript)
 		// console.log(e)
 		// const t = e.results[e.resultIndex][0].transcript
 		// console.log(t)
@@ -321,18 +319,16 @@ function drawProgressBar() {
 				Math.round(middle[1] + (end[1] - middle[1]) * w),
 				Math.round(middle[2] + (end[2] - middle[2]) * w),
 			]
-		} else if (progress<=1){
+		} else if (progress <= 1) {
 			w = progress * 2
 			color = [
 				Math.round(start[0] + (middle[0] - start[0]) * w),
 				Math.round(start[1] + (middle[1] - start[1]) * w),
 				Math.round(start[2] + (middle[2] - start[2]) * w),
 			]
-		}
-		else 
-		{
-			progress=1;
-			color = end;
+		} else {
+			progress = 1
+			color = end
 		}
 		console.log(color)
 		let width = progress * 327
@@ -466,7 +462,7 @@ $('#lists-tab').on('click', 'li', function (e) {
 		console.log(index)
 		console.log(url)
 		chrome.storage.sync.set({ blacklist: result.blacklist })
-		refresh();
+		refresh()
 	})
 })
 
@@ -545,13 +541,11 @@ $('.working-time').change(function (ev) {
 	})
 })
 
-function refresh()
-{
+function refresh() {
 	chrome.storage.sync.get(['tasklist'], function (e) {})
 	chrome.storage.sync.get(['blacklist'], function (result) {
 		var html = result.blacklist.map(function (e) {
-			if(e.includes('www.'))
-			{
+			if (e.includes('www.')) {
 				return `
               <li id="${e}" class="blacklisted"><div>
 				${e.split('//')[1].split('/')[0].split('www.')[1]}<br></div>
@@ -560,10 +554,8 @@ function refresh()
 				</div>
 			  </li>
               `
-			}
-			else 
-			{
-			return `
+			} else {
+				return `
               <li id="${e}" class="blacklisted">
                 ${e.split('//')[1].split('/')[0]}
               </li>
@@ -574,7 +566,7 @@ function refresh()
 	})
 }
 chrome.storage.sync.onChanged.addListener(function (e) {
-	refresh();
+	refresh()
 })
 
 function parseInput(input) {
@@ -643,8 +635,8 @@ function parseInput(input) {
 						: 0)
 			: 23
 	)
-	date.setMinutes(GETTIME ? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 1]) : 0) : 59)
 	date.getMinutes() < new Date().getMinutes() ? (date.getHours() <= new Date().getHours() ? date.setDate() + 1 : 0) : 0
+	date.setMinutes(GETTIME ? (GETTIME.length > 1 ? parseInt(GETTIME[GETTIME.length - 1]) : 0) : 59)
 
 	if (GETDATE) {
 		switch (GETDATE[GETDATE.length - 1]) {
@@ -682,7 +674,7 @@ function parseInput(input) {
 		url: matchedUrl ? 'https://' + matchedUrl.replace(/https?\:\/\//, '') : '',
 		title: matchedTitle,
 	}
-
+	console.log(returnobj)
 	return returnobj
 }
 
@@ -726,42 +718,7 @@ $('.add-task-button').click(function (event) {
 })
 
 $(this).keydown(function (e) {
-<<<<<<< HEAD
 	if ($('#lists-tab').hasClass('hidden')) {
 		updateNewTaskField(e)
-=======
-	let v = $('.add-task-input').val()
-	console.log(e)
-	if (e.keyCode == 13) {
-		updateProgressBar()
-		addTask(v)
-		v = ''
-	} else if (document.activeElement != document.querySelector('.add-task-input')) {
-		if (e.keyCode > 31 && e.keyCode < 127) {
-			v += e.key
-		} else if (e.keyCode == 8) {
-			v = v.slice(0, -1)
-		}
-	}
-	$('.add-task-input').val(v)
-	console.log(parseInput(v))
-	var inputDate = new Date(parseInput(v).date)
-	var left = inputDate - new Date()
-	if (Math.abs(left) > 3600000 * 24 * 14) {
-		left = Math.floor(left / (3600000 * 24 * 14))
-		unit = ' weeks'
-	} else if (Math.abs(left) > 3600000 * 23) {
-		left = Math.ceil(left / (3600000 * 24))
-		if(left>1)
-			unit = ' days';
-		else 
-			unit = ' day';
-	} else if (Math.abs(left) > 3600000) {
-		left = Math.floor(left / 3600000)
-		unit = ' hours'
-	} else if (Math.abs(left) >= 0) {
-		left = Math.floor(left / 60000)
-		unit = ' minutes'
->>>>>>> 6e0b455df97658dda904ad9f296511f46066cf3d
 	}
 })
