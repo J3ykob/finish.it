@@ -228,45 +228,45 @@ $(document).ready(function () {
 
 	refresh()
 
-	const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
-	const recognition = new SpeechRecognition()
+	// const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
+	// const recognition = new SpeechRecognition()
 
-	recognition.continuous = true
-	recognition.interimResults = true
+	// recognition.continuous = true
+	// recognition.interimResults = true
 	//recognition.lang = 'en'
-	recognition.onerror = (e) => {
-		console.log(e)
-		if (e.error == 'not-allowed')
-			window.location.href = 'chrome-extension://lakepiipmgnhgbmnpbhaaclnchoniknl/popup.html'
-	}
+	// recognition.onerror = (e) => {
+	// 	console.log(e)
+	// 	if (e.error == 'not-allowed')
+	// 		window.location.href = 'chrome-extension://lakepiipmgnhgbmnpbhaaclnchoniknl/popup.html'
+	// }
 
-	recognition.start()
+	// recognition.start()
 
-	console.log(recognition)
+	// console.log(recognition)
 
-	let s = false
+	// let s = false
 
-	recognition.onspeechstart = (e) => {}
+	// recognition.onspeechstart = (e) => {}
 
-	recognition.onstart = (e) => {
-		console.log('sr started')
-	}
-	recognition.onend = (e) => {}
+	// recognition.onstart = (e) => {
+	// 	console.log('sr started')
+	// }
+	// recognition.onend = (e) => {}
 
-	recognition.onresult = (e) => {
-		// updateNewTaskField(null, e.results[e.resultIndex][0].transcript)
-		// console.log(e)
-		// const t = e.results[e.resultIndex][0].transcript
-		// console.log(t)
-		// if (t.match(/okay|set|okej|ok/gi)) {
-		// 	console.log(t)
-		// 	s = true
-		// } else if (s) {
-		// 	console.log(t)
-		// 	addTask(t)
-		// 	s = false
-		// }
-	}
+	// recognition.onresult = (e) => {
+	// updateNewTaskField(null, e.results[e.resultIndex][0].transcript)
+	// console.log(e)
+	// const t = e.results[e.resultIndex][0].transcript
+	// console.log(t)
+	// if (t.match(/okay|set|okej|ok/gi)) {
+	// 	console.log(t)
+	// 	s = true
+	// } else if (s) {
+	// 	console.log(t)
+	// 	addTask(t)
+	// 	s = false
+	// }
+	//}
 })
 
 drawProgressBar()
@@ -459,8 +459,6 @@ $('#lists-tab').on('click', 'li', function (e) {
 		const isDeleted = (element) => element == url
 		var index = result.blacklist.findIndex(isDeleted)
 		result.blacklist.splice(index, 1)
-		console.log(index)
-		console.log(url)
 		chrome.storage.sync.set({ blacklist: result.blacklist })
 		refresh()
 	})
@@ -513,10 +511,9 @@ $(document).on('input', '#add-tasks input', function () {})
 
 $('.add-bl').click(function () {
 	chrome.tabs.getSelected(null, function (tab) {
-		var url = tab.url
-		console.log(url)
 		chrome.storage.sync.get(['blacklist'], function (result) {
-			result.blacklist.push(url)
+			result.blacklist.push(tab.url)
+			console.log(result.blacklist)
 			chrome.storage.sync.set({ blacklist: result.blacklist })
 		})
 	})

@@ -1,6 +1,6 @@
 {
 	"name": "Finish.it",
-	"version": "0.0001",
+	"version": "0.0003",
 	"description": "Be more productive!",
 	"permissions": ["storage", "tabs", "webNavigation", "storage"],
 	"background": {
